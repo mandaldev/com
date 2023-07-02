@@ -25,8 +25,8 @@ TEST(codecs_base16, "Com Codecs base16 test")
 	for (int i = 0; i < 256; i++) {
 		buf[i] = i;
 	}
-	auto base16 = Com::Codecs::base16_encode(buf.data(), buf.size());
-	auto decoded = Com::Codecs::base16_decode(base16);
+	auto base16 = Com::base16_encode(buf.data(), buf.size());
+	auto decoded = Com::base16_decode(base16);
 	assert(decoded.has_value());
 	assert(decoded.value() == buf);
 }

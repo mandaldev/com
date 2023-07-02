@@ -21,7 +21,7 @@
 
 /// UTF-8 codecs
 
-namespace Com::Codecs {
+namespace Com {
 
 std::optional<std::u32string> utf8_decode(std::string_view str);
 

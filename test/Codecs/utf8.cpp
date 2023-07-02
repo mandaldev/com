@@ -28,9 +28,9 @@ TEST(codecs_utf8, "Com Codecs utf8 test")
 			buf.push_back(c++);
 		}
 	}
-	auto utf8 = Com::Codecs::utf8_encode(buf);
+	auto utf8 = Com::utf8_encode(buf);
 	assert(utf8);
-	auto decoded = Com::Codecs::utf8_decode(utf8.value());
+	auto decoded = Com::utf8_decode(utf8.value());
 	assert(decoded.has_value());
 	assert(decoded.value() == buf);
 }

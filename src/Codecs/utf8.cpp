@@ -18,7 +18,7 @@
 #include <array>
 #include <cassert>
 
-namespace Com::Codecs {
+namespace Com {
 
 /// UTF8-octets = *( UTF8-char )
 /// UTF8-char   = UTF8-1 / UTF8-2 / UTF8-3 / UTF8-4

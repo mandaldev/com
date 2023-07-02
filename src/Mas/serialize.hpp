@@ -176,7 +176,7 @@ Mas::Value serialize(T const &v)
 		return v;
 	} else if constexpr (std::is_same_v<T, std::u32string>) {
 		// encode to utf-8
-		return Com::Codecs::utf8_encode(v).value_or("");
+		return Com::utf8_encode(v).value_or("");
 	} else if constexpr (std::is_same_v<T, std::filesystem::path>) {
 		// to string
 		return v.string();
@@ -196,10 +196,7 @@ Mas::Value serialize(T const &v)
 		// encode key to utf-8
 		Mas::Map m;
 		for (auto &p : v) {
-			m.emplace(
-				Com::Codecs::utf8_encode(p.first).value_or(""),
-				serialize(p.second)
-			);
+			m.emplace(Com::utf8_encode(p.first).value_or(""), serialize(p.second));
 		}
 		return m;
 	} else if constexpr (Com::Iterable<T>::value) {
@@ -239,7 +236,7 @@ bool deserialize(Mas::Value const &mas, T &v)
 	} else if constexpr (std::is_same_v<T, std::u32string>) {
 		// encoded to utf-8
 		if (mas.is_string()) {
-			auto res = Com::Codecs::utf8_decode(mas.string_or(""));
+			auto res = Com::utf8_decode(mas.string_or(""));
 			if (res.has_value()) {
 				v = res.value();
 				return true;
@@ -278,7 +275,7 @@ bool deserialize(Mas::Value const &mas, T &v)
 		}
 		v.clear();
 		for (auto &p : mas.map_or({})) {
-			auto key = Com::Codecs::utf8_decode(p.first).value_or(U"");
+			auto key = Com::utf8_decode(p.first).value_or(U"");
 			if (key.empty()) {
 				continue;
 			}

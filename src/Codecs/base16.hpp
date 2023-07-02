@@ -18,7 +18,7 @@
 #include <string>
 #include <optional>
 
-namespace Com::Codecs {
+namespace Com {
 
 /// base16 codecs
 /// encode byte to hex form XX.
