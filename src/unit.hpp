@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef _COM_SRC_UNIT_HPP_
 #define _COM_SRC_UNIT_HPP_
+#include <cassert>
 
 /// Basic unit testing utils
 

@@ -16,6 +16,7 @@
         "src/Xo/exec.cpp"
         "src/Codecs/base16.cpp"
         "src/Codecs/utf8.cpp"
+        "src/Date.cpp"
       ]
 
       install [
@@ -30,6 +31,8 @@
             "src/meta.hpp"
 
             "src/Flags.hpp"
+            "src/Range.hpp"
+            "src/Date.hpp"
           ]
         }
         {
@@ -63,6 +66,7 @@
 
       src [
         "test/main.cpp"
+        "test/string.cpp"
         "test/Codecs/base16.cpp"
         "test/Codecs/utf8.cpp"
         "test/Mas/serialize.cpp"

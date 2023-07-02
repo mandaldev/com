@@ -16,7 +16,6 @@
 #include "../../src/unit.hpp"
 #include "../../src/Mas/serialize.hpp"
 #include <string>
-#include <cassert>
 
 struct A {
 	int i = 0;
