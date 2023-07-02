@@ -1,0 +1,76 @@
+{
+  name "com"
+  author "Mandal Dev"
+  desc "bunch of C++ common utils based on stdc++ and enchance stdc++"
+  license "GPLv3"
+
+  target {
+    Com {
+      language "c++"
+      std "c++17"
+      type "slib"
+
+      src [
+        "src/Mas/Value.cpp"
+        "src/Xo/CommandLine.cpp"
+        "src/Xo/exec.cpp"
+        "src/Codecs/base16.cpp"
+        "src/Codecs/utf8.cpp"
+      ]
+
+      install [
+        {
+          dir "include/Com"
+          files [
+            "src/memory.hpp"
+            "src/string.hpp"
+
+            "src/base.hpp"
+            "src/raii.hpp"
+            "src/meta.hpp"
+
+            "src/Flags.hpp"
+          ]
+        }
+        {
+          dir "include/Com/Mas"
+          files [
+            "src/Mas/Value.hpp"
+            "src/Mas/serialize.hpp"
+          ]
+        }
+        {
+          dir "include/Com/Xo"
+          files [
+            "src/Xo/CommandLine.hpp"
+            "src/Xo/exec.hpp"
+          ]
+        }
+        {
+          dir "include/Com/Codecs"
+          files [
+            "src/Codecs/base16.hpp"
+            "src/Codecs/utf8.hpp"
+          ]
+        }
+      ]
+    }
+
+    check {
+      language "c++"
+      std "c++17"
+      type "exe"
+
+      src [
+        "test/main.cpp"
+        "test/Codecs/base16.cpp"
+        "test/Codecs/utf8.cpp"
+        "test/Mas/serialize.cpp"
+      ]
+
+      dep [
+        "Com"
+      ]
+    }
+  }
+}

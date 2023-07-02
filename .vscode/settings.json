@@ -1,0 +1,7 @@
+{
+	"files.associations": {
+		"*.clang-format": "yaml",
+		"*.header": "plaintext",
+		"type_traits": "cpp"
+	}
+}
