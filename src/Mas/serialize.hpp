@@ -258,10 +258,10 @@ bool deserialize(Mas::Value const &mas, T &v)
 	} else if constexpr (Com::IsTemplateWith<T, std::map, std::string>::value
 		|| Com::IsTemplateWith<T, std::unordered_map, std::string>::value) {
 		// string keyed maps, use Mas::map directly
-		v.clear();
 		if (!mas.is_map()) {
 			return false;
 		}
+		v.clear();
 		for (auto &p : mas.map_or({})) {
 			typename T::mapped_type item;
 			if (deserialize(p.second, item)) {
@@ -273,10 +273,10 @@ bool deserialize(Mas::Value const &mas, T &v)
 		|| Com::IsTemplateWith<T, std::unordered_map, std::u32string>::value) {
 		// string keyed maps, use Mas::map directly
 		// encode key to utf-8
-		v.clear();
 		if (!mas.is_map()) {
 			return false;
 		}
+		v.clear();
 		for (auto &p : mas.map_or({})) {
 			auto key = Com::Codecs::utf8_decode(p.first).value_or(U"");
 			if (key.empty()) {
