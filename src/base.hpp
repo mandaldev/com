@@ -104,5 +104,13 @@ static inline std::optional<T> error_to_optional(T &&value, E &ec)
 	return value;
 }
 
+template <typename Fn>
+static inline void repeat(size_t n, Fn &&fn)
+{
+	for (size_t i = 0; i < n; i++) {
+		fn();
+	}
+}
+
 }
 #endif
