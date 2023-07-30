@@ -17,6 +17,7 @@
         "src/Codecs/base16.cpp"
         "src/Codecs/utf8.cpp"
         "src/Date.cpp"
+        "src/file.cpp"
       ]
 
       install [
@@ -25,6 +26,7 @@
           files [
             "src/memory.hpp"
             "src/string.hpp"
+            "src/file.hpp"
 
             "src/base.hpp"
             "src/raii.hpp"
