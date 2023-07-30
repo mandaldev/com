@@ -181,7 +181,7 @@ Mas::Value serialize(T const &v)
 		// to string
 		return v.string();
 	} else if constexpr (Com::IsTemplate<T, std::pair>::value) {
-		return serialize_kvs(COM_KV(v, frist), COM_KV(v, second));
+		return serialize_kvs(COM_KV(v, first), COM_KV(v, second));
 	} else if constexpr (Com::IsTemplateWith<T, std::map, std::string>::value
 		|| Com::IsTemplateWith<T, std::unordered_map, std::string>::value) {
 		// string keyed maps, use Mas::map directly
