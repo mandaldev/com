@@ -15,6 +15,19 @@
 				"clear": false
 			},
 			"command": "cgen build -cdb && ./build/debug/check"
+		},
+		{
+			"label": "install",
+			"type": "shell",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			},
+			"command": "cgen install Com"
 		}
 	]
 }
