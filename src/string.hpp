@@ -41,21 +41,24 @@ static inline std::string &tolower(std::string &str)
 }
 
 /// remove all white spaces at front
-static inline std::string_view trim_front(std::string_view const &str)
+template <typename... Args>
+static inline std::basic_string_view<Args...> trim_front(std::basic_string_view<Args...> const &str)
 {
-	auto pos = std::find_if_not(str.begin(), str.end(), [](auto c) { return std::isspace((unsigned char)c); });
-	return std::string_view(pos, str.cend() - pos);
+	auto pos = std::find_if_not(str.begin(), str.end(), [](auto c) { return std::isspace((int)c); });
+	return std::basic_string_view<Args...>(pos, str.cend() - pos);
 }
 
 /// remove all white spaces at back
-static inline std::string_view trim_back(std::string_view const &str)
+template <typename... Args>
+static inline std::basic_string_view<Args...> trim_back(std::basic_string_view<Args...> const &str)
 {
-	auto pos = std::find_if_not(str.rbegin(), str.rend(), [](auto c) { return std::isspace((unsigned char)c); }) - str.rbegin();
-	return std::string_view(str.begin(), str.end() - pos - str.begin());
+	auto pos = std::find_if_not(str.rbegin(), str.rend(), [](auto c) { return std::isspace((int)c); }) - str.rbegin();
+	return std::basic_string_view(str.begin(), str.end() - pos - str.begin());
 }
 
 /// remove all white spaces at front and back
-static inline std::string_view trim(std::string_view const &str)
+template <typename... Args>
+static inline std::basic_string_view<Args...> trim(std::basic_string_view<Args...> const &str)
 {
 	return trim_front(trim_back(str));
 }
@@ -86,19 +89,23 @@ inline auto join(Delimter const &delimter, Range const &range)
 	return ret;
 }
 
-/// split string by `delims`
+/// split `str` at `each` one of `delims`
 template <typename Delims, typename... Args>
-inline auto split(std::basic_string<Args...> const &str, Delims &&delims)
+inline auto split(std::basic_string_view<Args...> const &str, Delims &&delims, bool each = false)
 {
-	std::vector<std::basic_string<Args...>> strs;
+	std::vector<std::basic_string_view<Args...>> strs;
 	size_t e = 0;
-	while (e != str.npos) {
-		auto b = str.find_first_not_of(delims, e);
+	while (e < str.size()) {
+		auto b = str.find_first_of(delims, e);
 		if (b == str.npos) {
+			strs.push_back({str.data() + e, str.size() - e});
 			break;
 		}
-		e = str.find_first_of(delims, b);
-		strs.push_back(std::basic_string<Args...>(str.data() + b, str.data() + (e == str.npos ? str.size() : e)));
+		std::basic_string_view<Args...> item(str.data() + e, b - e);
+		if (each || !item.empty()) {
+			strs.push_back(item);
+		}
+		e = b + 1;
 	}
 	return strs;
 }

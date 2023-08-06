@@ -24,12 +24,19 @@ TEST(string, "string utils test")
 	std::vector<std::string> strs = {"a", "b", "c"};
 	assert(Com::join(' ', strs) == "a b c");
 
-	assert(Com::split(std::string(" a b  c"), " ") == strs);
+	{
+		std::vector<std::string_view> strs = {"a", "b", "c"};
+		assert(Com::split(std::string_view(" a b  c"), " ") == strs);
+	}
+	{
+		std::vector<std::string_view> strs = {"", "a", "b", "", "c"};
+		assert(Com::split(std::string_view(" a b  c"), " ", true) == strs);
+	}
 
 	strs = {"", "b", "c"};
 	assert(Com::join(' ', strs) == "b c");
 
-	assert(Com::trim(" \t\v\nhello world\n") == "hello world");
+	assert(Com::trim(std::string_view(" \t\v\nhello world\n")) == "hello world");
 
 	assert(Com::toupper(a) == "HELLO");
 	assert(Com::tolower(a) == "hello");
