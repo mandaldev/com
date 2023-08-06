@@ -40,7 +40,7 @@ static inline std::string &tolower(std::string &str)
 	return str;
 }
 
-/// remove all white spaces at front
+/// remove all `trim_chars` at front
 template <typename... Args>
 static inline std::basic_string_view<Args...> trim_front(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
@@ -48,7 +48,7 @@ static inline std::basic_string_view<Args...> trim_front(std::basic_string_view<
 	return std::basic_string_view<Args...>(pos, str.cend() - pos);
 }
 
-/// remove all white spaces at back
+/// remove all `trim_chars` at back
 template <typename... Args>
 static inline std::basic_string_view<Args...> trim_back(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
@@ -56,11 +56,47 @@ static inline std::basic_string_view<Args...> trim_back(std::basic_string_view<A
 	return std::basic_string_view(str.begin(), str.end() - pos - str.begin());
 }
 
-/// remove all white spaces at front and back
+/// remove all `trim_chars` at front and back
 template <typename... Args>
 static inline std::basic_string_view<Args...> trim(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
 	return trim_front(trim_back(str, trim_chars), trim_chars);
+}
+
+/// remove all white spaces (' ', '\n', '\t', '\v') at front
+static inline std::string_view trim_front(std::string_view const &str)
+{
+	return trim_front(str, std::string_view(" \n\v\t"));
+}
+
+/// remove all white spaces (' ', '\n', '\t', '\v') at back
+static inline std::string_view trim_back(std::string_view const &str)
+{
+	return trim_back(str, std::string_view(" \n\v\t"));
+}
+
+/// remove all white spaces (' ', '\n', '\t', '\v') at front and back
+static inline std::string_view trim(std::string_view const &str)
+{
+	return trim(str, std::string_view(" \n\v\t"));
+}
+
+/// remove all white spaces (' ', '\n', '\t', '\v') at front
+static inline std::u32string_view trim_front(std::u32string_view const &str)
+{
+	return trim_front(str, std::u32string_view(U" \n\v\t"));
+}
+
+/// remove all white spaces (' ', '\n', '\t', '\v') at back
+static inline std::u32string_view trim_back(std::u32string_view const &str)
+{
+	return trim_back(str, std::u32string_view(U" \n\v\t"));
+}
+
+/// remove all white spaces (' ', '\n', '\t', '\v') at front and back
+static inline std::u32string_view trim(std::u32string_view const &str)
+{
+	return trim(str, std::u32string_view(U" \n\v\t"));
 }
 
 /// join two string with delimter
