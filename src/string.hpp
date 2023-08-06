@@ -42,25 +42,25 @@ static inline std::string &tolower(std::string &str)
 
 /// remove all white spaces at front
 template <typename... Args>
-static inline std::basic_string_view<Args...> trim_front(std::basic_string_view<Args...> const &str)
+static inline std::basic_string_view<Args...> trim_front(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
-	auto pos = std::find_if_not(str.begin(), str.end(), [](auto c) { return std::isspace((int)c); });
+	auto pos = std::find_if_not(str.begin(), str.end(), [&trim_chars](auto c) { return trim_chars.find(c) < trim_chars.size(); });
 	return std::basic_string_view<Args...>(pos, str.cend() - pos);
 }
 
 /// remove all white spaces at back
 template <typename... Args>
-static inline std::basic_string_view<Args...> trim_back(std::basic_string_view<Args...> const &str)
+static inline std::basic_string_view<Args...> trim_back(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
-	auto pos = std::find_if_not(str.rbegin(), str.rend(), [](auto c) { return std::isspace((int)c); }) - str.rbegin();
+	auto pos = std::find_if_not(str.rbegin(), str.rend(), [&trim_chars](auto c) { return trim_chars.find(c) < trim_chars.size(); }) - str.rbegin();
 	return std::basic_string_view(str.begin(), str.end() - pos - str.begin());
 }
 
 /// remove all white spaces at front and back
 template <typename... Args>
-static inline std::basic_string_view<Args...> trim(std::basic_string_view<Args...> const &str)
+static inline std::basic_string_view<Args...> trim(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
-	return trim_front(trim_back(str));
+	return trim_front(trim_back(str, trim_chars), trim_chars);
 }
 
 /// join two string with delimter

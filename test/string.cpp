@@ -36,7 +36,7 @@ TEST(string, "string utils test")
 	strs = {"", "b", "c"};
 	assert(Com::join(' ', strs) == "b c");
 
-	assert(Com::trim(std::string_view(" \t\v\nhello world\n")) == "hello world");
+	assert(Com::trim(std::string_view(" \t\v\nhello world\n"), std::string_view(" \t\v\n")) == "hello world");
 
 	assert(Com::toupper(a) == "HELLO");
 	assert(Com::tolower(a) == "hello");
