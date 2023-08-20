@@ -21,11 +21,15 @@
 
 namespace Com {
 
+bool mkdirs(std::filesystem::path const &dir);
+
 std::optional<std::string> load_file(std::filesystem::path const &p);
 
 std::optional<Com::Mas::Value> load_mas_file(std::filesystem::path const &path);
 
 bool save_file(std::filesystem::path const &path, std::string_view buf);
+
+bool save_pretty_mas_file(std::filesystem::path const &path, Mas::Value const &mas);
 
 }
 #endif

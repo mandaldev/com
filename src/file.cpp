@@ -19,6 +19,17 @@
 
 namespace Com {
 
+bool mkdirs(std::filesystem::path const &dir)
+{
+	std::error_code ec{};
+	std::filesystem::create_directories(dir, ec);
+	if (ec) {
+		std::cerr << "Error: failed to create directory " << dir << ", error: " << ec << "\n";
+		return false;
+	}
+	return true;
+}
+
 std::optional<std::string> load_file(std::filesystem::path const &p)
 {
 	std::error_code ec {};
@@ -45,7 +56,15 @@ std::optional<Com::Mas::Value> load_mas_file(std::filesystem::path const &path)
 
 bool save_file(std::filesystem::path const &path, std::string_view buf)
 {
-	std::ofstream ofs(path);
-	return !!ofs.write(buf.data(), buf.size());
+	return mkdirs(path.parent_path()) && std::ofstream(path).write(buf.data(), buf.size());
 }
+
+bool save_pretty_mas_file(std::filesystem::path const &path, Mas::Value const &mas)
+{
+	Mas::EncodeOption opt;
+	opt.pretty = true;
+	opt.force_quoting = false;
+	return save_file(path, Mas::encode(mas, opt));
+}
+
 }
