@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <set>
 #include <map>
+#include <variant>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -161,6 +162,17 @@ bool sequence_from_mas(Sequence &c, Mas::Value const &mas, Pusher &&push)
 	return true;
 }
 
+template <size_t I, typename T>
+bool deserialize_variant(Mas::Value const &mas, T &v)
+{
+	std::variant_alternative_t<I, T> result;
+	if (deserialize(mas, result)) {
+		v = std::move(result);
+		return true;
+	}
+	return false;
+}
+
 }
 
 template <typename T>
@@ -199,6 +211,11 @@ Mas::Value serialize(T const &v)
 			m.emplace(Com::utf8_encode(p.first).value_or(""), serialize(p.second));
 		}
 		return m;
+	} else if constexpr (Com::IsTemplate<T, std::variant>::value) {
+		return std::visit([](auto &o)
+		{
+			return serialize(o);
+		}, v);
 	} else if constexpr (Com::Iterable<T>::value) {
 		// other containers
 		// use Mas::Array
@@ -207,9 +224,8 @@ Mas::Value serialize(T const &v)
 			a.push_back(serialize(item));
 		}
 		return a;
-	} else {
-		return __detial::Serialize_Of_This_Type_Not_Implemented;
 	}
+	return __detial::Serialize_Of_This_Type_Not_Implemented;
 }
 
 template <typename T>
@@ -285,6 +301,23 @@ bool deserialize(Mas::Value const &mas, T &v)
 			}
 		}
 		return true;
+	} else if constexpr (Com::IsTemplate<T, std::variant>::value) {
+		if constexpr (0 < std::variant_size_v<T>) {
+			if (__detial::deserialize_variant<0>(mas, v)) {
+				return true;
+			}
+		}
+		if constexpr (1 < std::variant_size_v<T>) {
+			if (__detial::deserialize_variant<1>(mas, v)) {
+				return true;
+			}
+		}
+		if constexpr (2 < std::variant_size_v<T>) {
+			if (__detial::deserialize_variant<2>(mas, v)) {
+				return true;
+			}
+		}
+		return false;
 	} else if constexpr (__detial::Insertable<T>::value) {
 		// other containers
 		// use Mas::Array
@@ -293,9 +326,8 @@ bool deserialize(Mas::Value const &mas, T &v)
 		// other containers
 		// use Mas::Array
 		return __detial::sequence_from_mas(v, mas, [](T &seq, auto &&item) { seq.push_back(std::move(item)); });
-	} else {
-		return __detial::Deserialize_Of_This_Type_Not_Implemented;
 	}
+	return __detial::Deserialize_Of_This_Type_Not_Implemented;
 }
 
 template <typename... KVs>

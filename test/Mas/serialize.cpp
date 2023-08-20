@@ -16,6 +16,7 @@
 #include "../../src/unit.hpp"
 #include "../../src/Mas/serialize.hpp"
 #include <string>
+#include <vector>
 
 struct A {
 	int i = 0;
@@ -63,6 +64,33 @@ TEST(mas_serialize, "Com Mas serializing test")
 		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
 	}
 
+	{
+		std::variant<int> v, v_;
+		static_assert(Com::IsTemplate<decltype(v), std::variant>::value);
+		v = 1;
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+	}
+	{
+		std::variant<int, std::vector<int>> v, v_;
+		static_assert(Com::IsTemplate<decltype(v), std::variant>::value);
+		v = 1;
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+		v = std::vector<int>{ 1, 2, 3 };
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+	}
+	{
+		std::variant<int, std::vector<int>, std::map<std::string, int>> v, v_;
+		static_assert(Com::IsTemplate<decltype(v), std::variant>::value);
+		v = 1;
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+		v = std::vector<int>{ 1, 2, 3 };
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+		v = std::map<std::string, int>{
+			{ "a", 1 },
+			{ "b", 2 },
+		};
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+	}
 	// struct A {};
 	// Com::Mas::serialize(A());
 }
