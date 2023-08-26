@@ -22,8 +22,8 @@
 
       install [
         {
-          dir "include/Com"
-          files [
+          dir "Com"
+          headers [
             "src/memory.hpp"
             "src/string.hpp"
             "src/file.hpp"
@@ -38,22 +38,22 @@
           ]
         }
         {
-          dir "include/Com/Mas"
-          files [
+          dir "Com/Mas"
+          headers [
             "src/Mas/Value.hpp"
             "src/Mas/serialize.hpp"
           ]
         }
         {
-          dir "include/Com/Xo"
-          files [
+          dir "Com/Xo"
+          headers [
             "src/Xo/CommandLine.hpp"
             "src/Xo/exec.hpp"
           ]
         }
         {
-          dir "include/Com/Codecs"
-          files [
+          dir "Com/Codecs"
+          headers [
             "src/Codecs/base16.hpp"
             "src/Codecs/utf8.hpp"
           ]
