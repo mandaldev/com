@@ -20,15 +20,15 @@
 namespace Com {
 
 template <typename T>
-static inline auto make(std::shared_ptr<T> &sp)
+static inline void make(std::shared_ptr<T> &sp)
 {
-	return sp = std::make_shared<T>();
+	sp = std::make_shared<T>();
 }
 
 template <typename T, typename... Args>
-static inline auto make(std::shared_ptr<T> &sp, Args&&... args)
+static inline void make(std::shared_ptr<T> &sp, Args&&... args)
 {
-	return sp = std::make_shared<T>(std::forward(args...));
+	sp = std::make_shared<T>(std::forward(args...));
 }
 
 }
