@@ -100,6 +100,14 @@ bool deserialize<enum_type>(Value const &mas, enum_type &v) \
 } \
 }
 
+/// signatures of `COM_ENUM` only
+#define COM_ENUM_DECL(enum_type) \
+namespace Com::Mas \
+{ \
+template <> Value serialize<enum_type>(enum_type const &value); \
+template <> bool deserialize<enum_type>(Value const &mas, enum_type &v); \
+}
+
 // impl
 
 namespace __detial {
