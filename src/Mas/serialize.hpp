@@ -68,6 +68,38 @@ bool deserialize_kvs(Mas::Value const &mas, KVs&&... args);
 /// (de)serialize_kvs helper
 #define COM_KV(s, m) #m, s.m
 
+/// helper for serializing enums
+/// never put this inside any namesapces
+/// usage: `COM_E(EnumType, enum1, enum2, ...)`
+#define COM_ENUM(enum_type, ...) \
+namespace Com::Mas \
+{ \
+template <> \
+Value serialize<enum_type>(enum_type const &value) \
+{ \
+	auto &EN = __detial::enum_to_names<enum_type, __VA_ARGS__>(); \
+	auto it = EN.find(value); \
+	if (it != EN.end()) { \
+		return std::string(it->second); \
+	} \
+	return std::string(); \
+} \
+template <> \
+bool deserialize<enum_type>(Value const &mas, enum_type &v) \
+{ \
+	if (!mas.is_string()) { \
+		return false; \
+	} \
+	auto &NE = __detial::name_to_enum<enum_type, __VA_ARGS__>(); \
+	auto it = NE.find(mas.string_or("")); \
+	if (it != NE.end()) { \
+		v = it->second; \
+		return true; \
+	} \
+	return false; \
+} \
+}
+
 // impl
 
 namespace __detial {
@@ -171,6 +203,40 @@ bool deserialize_variant(Mas::Value const &mas, T &v)
 		return true;
 	}
 	return false;
+}
+
+template <typename T, T t>
+constexpr char const *get_raw_enum_name()
+{
+	// NOTE gcc feature only
+	return __PRETTY_FUNCTION__;
+}
+
+template <typename T, T t>
+constexpr std::string_view scrape_enum_name()
+{
+	std::string_view raw_name = get_raw_enum_name<T, t>();
+	auto e = raw_name.find_last_of(']');
+	auto b = raw_name.find_last_of(':', e);
+	return raw_name.substr(b + 1, e - b - 1);
+}
+
+template <typename T, T... enums>
+std::map<T, std::string_view> const &enum_to_names()
+{
+	static const std::map<T, std::string_view> map = {
+		{enums, scrape_enum_name<T, enums>()}...
+	};
+	return map;
+}
+
+template <typename T, T... enums>
+std::map<std::string_view, T> const &name_to_enum()
+{
+	static const std::map<std::string_view, T> map = {
+		{scrape_enum_name<T, enums>(), enums}...
+	};
+	return map;
 }
 
 }

@@ -40,6 +40,12 @@ bool deserialize(Value const &mas, A &v)
 }
 }
 
+enum class Align
+{
+	Top, Center, Bottom,
+};
+COM_ENUM(Align, Align::Top, Align::Center, Align::Bottom)
+
 TEST(mas_serialize, "Com Mas serializing test")
 {
 	{
@@ -89,6 +95,10 @@ TEST(mas_serialize, "Com Mas serializing test")
 			{ "a", 1 },
 			{ "b", 2 },
 		};
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+	}
+	{
+		Align v = Align::Center, v_;
 		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
 	}
 	// struct A {};
