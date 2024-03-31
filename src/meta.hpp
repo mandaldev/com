@@ -18,6 +18,10 @@
 #include <cstdint>
 #include <type_traits>
 #include <iterator>
+#include <map>
+#include <unordered_map>
+#include <set>
+#include <unordered_set>
 
 namespace Com {
 
@@ -55,6 +59,18 @@ struct IsTemplate<T, Template, std::void_t<decltype(__detial::take_template<Temp
 static_assert(IsTemplate<__detial::Test1<int>, __detial::Test1>::value);
 static_assert(!IsTemplate<__detial::Test1<int>, __detial::Test2>::value);
 
+template <typename T>
+inline constexpr bool IS_MAP = Com::IsTemplate<T, std::map>::value
+|| Com::IsTemplate<T, std::multimap>::value
+|| Com::IsTemplate<T, std::unordered_map>::value
+|| Com::IsTemplate<T, std::unordered_multimap>::value;
+
+template <typename T>
+inline constexpr bool IS_SET = Com::IsTemplate<T, std::set>::value
+|| Com::IsTemplate<T, std::multiset>::value
+|| Com::IsTemplate<T, std::unordered_set>::value
+|| Com::IsTemplate<T, std::unordered_multiset>::value;
+
 /// test `T` is a template type `Template<First, ...>`
 template <typename T, template <typename...> typename Template, typename First, typename = void>
 struct IsTemplateWith
@@ -69,6 +85,33 @@ struct IsTemplateWith<T, Template, First, std::void_t<decltype(__detial::take_te
 // test
 static_assert(IsTemplateWith<__detial::Test1<int, bool>, __detial::Test1, int>::value);
 static_assert(!IsTemplateWith<__detial::Test1<int, bool>, __detial::Test2, int>::value);
+
+template <typename T, typename W>
+inline constexpr bool IS_MAP_WITH = Com::IsTemplateWith<T, std::map, W>::value
+|| Com::IsTemplateWith<T, std::multimap, W>::value
+|| Com::IsTemplateWith<T, std::unordered_map, W>::value
+|| Com::IsTemplateWith<T, std::unordered_multimap, W>::value;
+
+template <typename T, typename W>
+inline constexpr bool IS_SET_WITH = Com::IsTemplateWith<T, std::set, W>::value
+|| Com::IsTemplateWith<T, std::multiset, W>::value
+|| Com::IsTemplateWith<T, std::unordered_set, W>::value
+|| Com::IsTemplateWith<T, std::unordered_multiset, W>::value;
+
+template <typename Map, typename = void>
+struct IsArithmeticKeyedMap
+: std::false_type
+{};
+
+template <typename Map>
+struct IsArithmeticKeyedMap<Map, std::void_t<decltype(std::declval<typename Map::key_type>())>>
+: std::integral_constant<bool, IS_MAP<Map> && std::is_arithmetic_v<typename Map::key_type>>
+{};
+
+static_assert(IsArithmeticKeyedMap<std::map<int, int>>::value);
+static_assert(!IsArithmeticKeyedMap<std::map<std::string, int>>::value);
+static_assert(!IsArithmeticKeyedMap<std::set<std::string>>::value);
+static_assert(!IsArithmeticKeyedMap<int>::value);
 
 /// test `T` can be used in range-for loop
 template <typename T, typename = void>
