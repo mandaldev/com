@@ -156,14 +156,19 @@ Mas::Value number_to_mas(T v, Args&&... args)
 }
 
 template <typename T>
-bool number_from_mas(T &v, Mas::Value const & mas)
+bool number_from_str(T &v, Mas::String const & str)
 {
-	auto str = mas.string_or("");
 	auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), v);
 	if (ec == std::errc()) {
         	return true;
 	}
  	return false;
+}
+
+template <typename T>
+bool number_from_mas(T &v, Mas::Value const & mas)
+{
+	return mas.is_string() && number_from_str(v, mas.string_or(""));
 }
 
 template <size_t N, typename Member, typename... Args>
@@ -194,9 +199,20 @@ bool sequence_from_mas(Sequence &c, Mas::Value const &mas, Pusher &&push)
 		return false;
 	}
 	for (auto &item : mas.array_or({})) {
-		typename Sequence::value_type v;
-		if (Com::Mas::deserialize(item, v)) {
-			push(c, std::move(v));
+		if constexpr (Com::IsTemplate<Sequence, std::map>::value
+		|| Com::IsTemplate<Sequence, std::unordered_map>::value
+		|| Com::IsTemplate<Sequence, std::multimap>::value
+		|| Com::IsTemplate<Sequence, std::unordered_multimap>::value
+		) {
+			std::pair<typename Sequence::key_type, typename Sequence::mapped_type> v;
+			if (Com::Mas::deserialize(item, v)) {
+				push(c, std::move(v));
+			}
+		} else { // template of set then
+			typename Sequence::value_type v;
+			if (Com::Mas::deserialize(item, v)) {
+				push(c, std::move(v));
+			}
 		}
 	}
 	return true;
@@ -249,11 +265,16 @@ std::map<std::string_view, T> const &name_to_enum()
 
 }
 
-template <typename T>
-Mas::Value serialize(T const &v)
+template <typename V>
+Mas::Value serialize(V const &v)
 {
+	using T = std::remove_const_t<std::remove_reference_t<V>>;
 	if constexpr (std::is_same_v<T, bool>) {
 		return v ? "true" : "false";
+	} else if constexpr (std::is_same_v<T, char>) {
+		return std::string(1, v);
+	} else if constexpr (std::is_same_v<T, char32_t>) {
+		return utf8_encode(std::u32string(1, v)).value_or("\0");
 	} else if constexpr (std::is_integral_v<T>) {
 		return __detial::number_to_mas(v, 10);
 	} else if constexpr (std::is_floating_point_v<T>) {
@@ -268,21 +289,17 @@ Mas::Value serialize(T const &v)
 		return v.string();
 	} else if constexpr (Com::IsTemplate<T, std::pair>::value) {
 		return serialize_kvs(COM_KV(v, first), COM_KV(v, second));
-	} else if constexpr (Com::IsTemplateWith<T, std::map, std::string>::value
-		|| Com::IsTemplateWith<T, std::unordered_map, std::string>::value) {
-		// string keyed maps, use Mas::map directly
-		Mas::Map m;
-		for (auto &p : v) {
-			m.emplace(p.first, serialize(p.second));
-		}
-		return m;
-	} else if constexpr (Com::IsTemplateWith<T, std::map, std::u32string>::value
-		|| Com::IsTemplateWith<T, std::unordered_map, std::u32string>::value) {
+	} else if constexpr (
+		Com::IS_MAP_WITH<T, std::string>
+		|| Com::IS_MAP_WITH<T, std::u32string>
+		|| Com::IS_MAP_WITH<T, char>
+		|| Com::IS_MAP_WITH<T, char32_t>
+	) {
 		// string keyed maps, use Mas::map directly
 		// encode key to utf-8
 		Mas::Map m;
 		for (auto &p : v) {
-			m.emplace(Com::utf8_encode(p.first).value_or(""), serialize(p.second));
+			m.emplace(serialize(p.first).as_string(), serialize(p.second));
 		}
 		return m;
 	} else if constexpr (Com::IsTemplate<T, std::variant>::value) {
@@ -302,11 +319,11 @@ Mas::Value serialize(T const &v)
 	return __detial::Serialize_Of_This_Type_Not_Implemented;
 }
 
+/// from string
 template <typename T>
-bool deserialize(Mas::Value const &mas, T &v)
+bool deserialize(Mas::String const &str, T &v)
 {
 	if constexpr (std::is_same_v<T, bool>) {
-		auto str = mas.string_or("");
 		if (str == "true") {
 			v = true;
 		} else if (str == "false") {
@@ -315,66 +332,87 @@ bool deserialize(Mas::Value const &mas, T &v)
 			return false;
 		}
 		return true;
-	} else if constexpr (std::is_arithmetic_v<T>) {
-		return __detial::number_from_mas(v, mas);
-	} else if constexpr (std::is_same_v<T, std::string>) {
-		if (mas.is_string()) {
-			v = mas.string_or("");
-			return true;
+	} else if constexpr (std::is_same_v<T, char>) {
+		if (str.size() != 1) {
+			return false;
 		}
-		return false;
+		v = str[0];
+	} else if constexpr (std::is_same_v<T, char32_t>) {
+		auto us = utf8_decode(str);
+		if (!us) {
+			return false;
+		}
+		if (us.value().size() != 1) {
+			return false;
+		}
+		v = us.value()[0];
+		return true;
+	} else if constexpr (std::is_arithmetic_v<T>) {
+		return __detial::number_from_str(v, str);
+	} else if constexpr (std::is_same_v<T, std::string>) {
+		v = str;
+		return true;
 	} else if constexpr (std::is_same_v<T, std::u32string>) {
 		// encoded to utf-8
-		if (mas.is_string()) {
-			auto res = Com::utf8_decode(mas.string_or(""));
-			if (res.has_value()) {
-				v = res.value();
-				return true;
-			}
+		auto res = Com::utf8_decode(str);
+		if (res.has_value()) {
+			v = res.value();
+			return true;
 		}
 		return false;
 	} else if constexpr (std::is_same_v<T, std::filesystem::path>) {
 		// as string
-		if (mas.is_string()) {
-			v = mas.string_or("");
-			return true;
-		}
+		v = str;
+		return true;
+	}
+	return __detial::Deserialize_Of_This_Type_Not_Implemented;
+}
+
+template <typename T>
+bool deserialize_map(Mas::Value const &mas, T &v)
+{
+	// string keyed maps, use Mas::map directly
+	if (!mas.is_map()) {
 		return false;
+	}
+	v.clear();
+	for (auto &p : mas.map_or({})) {
+		typename T::key_type k;
+		if (deserialize(p.first, k)) {
+			typename T::mapped_type item;
+			if (deserialize(p.second, item)) {
+				v.emplace(std::move(k), std::move(item));
+			}
+		}
+	}
+	return true;
+}
+
+template <typename T>
+bool deserialize(Mas::Value const &mas, T &v)
+{
+	if constexpr (
+		std::is_same_v<T, bool>
+		|| std::is_same_v<T, char>
+		|| std::is_same_v<T, char32_t>
+		|| std::is_arithmetic_v<T>
+		|| std::is_same_v<T, std::string>
+		|| std::is_same_v<T, std::u32string>
+		|| std::is_same_v<T, std::filesystem::path>
+	) {
+		return mas.is_string() && deserialize(mas.string_or(""), v);
 	} else if constexpr (Com::IsTemplate<T, std::pair>::value) {
 		return deserialize_kvs(mas, COM_KV(v, first), COM_KV(v, second));
-	} else if constexpr (Com::IsTemplateWith<T, std::map, std::string>::value
-		|| Com::IsTemplateWith<T, std::unordered_map, std::string>::value) {
-		// string keyed maps, use Mas::map directly
-		if (!mas.is_map()) {
-			return false;
-		}
-		v.clear();
-		for (auto &p : mas.map_or({})) {
-			typename T::mapped_type item;
-			if (deserialize(p.second, item)) {
-				v.insert({p.first, std::move(item)});
-			}
-		}
-		return true;
-	} else if constexpr (Com::IsTemplateWith<T, std::map, std::u32string>::value
-		|| Com::IsTemplateWith<T, std::unordered_map, std::u32string>::value) {
-		// string keyed maps, use Mas::map directly
-		// encode key to utf-8
-		if (!mas.is_map()) {
-			return false;
-		}
-		v.clear();
-		for (auto &p : mas.map_or({})) {
-			auto key = Com::utf8_decode(p.first).value_or(U"");
-			if (key.empty()) {
-				continue;
-			}
-			typename T::mapped_type item;
-			if (deserialize(p.second, item)) {
-				v.insert({key, std::move(item)});
-			}
-		}
-		return true;
+	} else if constexpr (
+		Com::IS_MAP_WITH<T, bool>
+		|| Com::IS_MAP_WITH<T, char>
+		|| Com::IS_MAP_WITH<T, char32_t>
+		|| Com::IsArithmeticKeyedMap<T>::value
+		|| Com::IS_MAP_WITH<T, std::string>
+		|| Com::IS_MAP_WITH<T, std::u32string>
+		|| Com::IS_MAP_WITH<T, std::filesystem::path>
+	) {
+		return deserialize_map(mas, v);
 	} else if constexpr (Com::IsTemplate<T, std::variant>::value) {
 		if constexpr (0 < std::variant_size_v<T>) {
 			if (__detial::deserialize_variant<0>(mas, v)) {

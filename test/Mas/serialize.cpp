@@ -53,7 +53,19 @@ TEST(mas_serialize, "Com Mas serializing test")
 		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
 	}
 	{
+		char32_t v(U'中'), v_;
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+	}
+	{
 		std::vector<int> v = {1, 2, 3}, v_;
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+	}
+	{
+		std::vector<char32_t> v = {1, 2, 3}, v_;
+		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
+	}
+	{
+		std::map<char32_t, int> v = { {U'a', 1 } }, v_;
 		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
 	}
 	{
