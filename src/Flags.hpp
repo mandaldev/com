@@ -49,7 +49,7 @@ struct Flags
 
 	/// implict convert to integer so you can do all the
 	/// bit operations
-	constexpr operator uint64_t&()
+	constexpr operator uint64_t() const
 	{
 		return v;
 	}
