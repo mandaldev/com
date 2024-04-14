@@ -28,7 +28,7 @@ static inline void make(std::shared_ptr<T> &sp)
 template <typename T, typename... Args>
 static inline void make(std::shared_ptr<T> &sp, Args&&... args)
 {
-	sp = std::make_shared<T>(std::forward(args...));
+	sp = std::make_shared<T>(std::forward<Args>(args)...);
 }
 
 }
