@@ -35,6 +35,8 @@
             "src/Flags.hpp"
             "src/Range.hpp"
             "src/Date.hpp"
+
+            "src/log.hpp"
           ]
         }
         {
