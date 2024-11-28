@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef _COM_SRC_BASE_HPP_
 #define _COM_SRC_BASE_HPP_
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <type_traits>
