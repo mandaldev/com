@@ -31,5 +31,32 @@ static inline void make(std::shared_ptr<T> &sp, Args&&... args)
 	sp = std::make_shared<T>(std::forward<Args>(args)...);
 }
 
+/// as `std::enable_shared_from_this`, and add `bind_weak` api
+/// to provide safer callbacks.
+/// 一般来说，捕获共享指针是个糟糕的做法——可能引起循环引用，导致内存泄漏。
+/// 所以应该捕获弱指针，函数体内再获取共享指针。
+/// 这个类是对这种做法的一个包装，避免编写重复的设计代码。
+template <typename T>
+class EnableBindWeak
+: public std::enable_shared_from_this<T>
+{
+public:
+	/// wrap a lambda with another lambda
+	template <typename Fn>
+	auto bind_weak(Fn &&fn)
+	{
+		auto weak = this->weak_from_this();
+		return [weak, fn](auto... args)
+		{
+			auto shared = weak.lock();
+			if (!shared) {
+				return;
+			}
+			return fn(args...);
+		};
+	}
+};
+
+
 }
 #endif
