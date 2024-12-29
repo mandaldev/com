@@ -35,10 +35,13 @@ struct __logger
 {
 	__logger(char const *file, int line, const char *func, const char *severity)
 	{
-		auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		auto t_now = std::chrono::system_clock::now();
+		auto us = std::chrono::duration_cast<std::chrono::microseconds>(t_now.time_since_epoch()).count();
+		auto now = std::chrono::system_clock::to_time_t(t_now);
+		auto t_str = std::put_time(std::localtime(&now), "%F %T");
 		std::cerr
 			<< "[" << severity << "]"
-			<< "[" << std::put_time(std::localtime(&now), "%F %T") << "]"
+			<< "[" << t_str << '.' << (us % 1000000) << "]"
 			<< "[" << file << ":" << line << ":" << func << "] "
 			;
 	}
