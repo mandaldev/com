@@ -46,13 +46,13 @@ public:
 	auto bind_weak(Fn &&fn)
 	{
 		auto weak = this->weak_from_this();
-		return [weak, fn](auto... args)
+		return [weak, fn](auto&&... args)
 		{
 			auto shared = weak.lock();
 			if (!shared) {
 				return;
 			}
-			return fn(args...);
+			return fn(std::forward<decltype(args)>(args)...);
 		};
 	}
 };
