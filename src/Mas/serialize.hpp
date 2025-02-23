@@ -13,19 +13,19 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef _CGEN_SRC_MAS_SERIALIZE_HPP_
-#define _CGEN_SRC_MAS_SERIALIZE_HPP_
-#include "Value.hpp"
-#include "../meta.hpp"
+#ifndef CGEN_SRC_MAS_SERIALIZE_HPP_
+#define CGEN_SRC_MAS_SERIALIZE_HPP_
 #include "../Codecs/utf8.hpp"
-#include <functional>
+#include "../meta.hpp"
+#include "Value.hpp"
 #include <charconv>
 #include <filesystem>
-#include <set>
+#include <functional>
 #include <map>
-#include <variant>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
+#include <variant>
 
 /// Serialize API
 ///

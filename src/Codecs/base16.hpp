@@ -13,10 +13,10 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef _DEV_SRC_V_CODECS_BASE16_HPP_
-#define _DEV_SRC_V_CODECS_BASE16_HPP_
-#include <string>
+#ifndef DEV_SRC_V_CODECS_BASE16_HPP_
+#define DEV_SRC_V_CODECS_BASE16_HPP_
 #include <optional>
+#include <string>
 
 namespace Com {
 

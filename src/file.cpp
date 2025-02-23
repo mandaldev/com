@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "file.hpp"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 namespace Com {
 
@@ -39,7 +39,7 @@ std::optional<std::string> load_file(std::filesystem::path const &p)
 	}
 	auto buf = std::string(size, 0);
 	auto ifs = std::ifstream(p);
-	return ifs.read(buf.data(), buf.size()) ? buf : std::string();
+	return ifs.read(buf.data(), (std::streamsize)buf.size()) ? buf : std::string();
 }
 
 // load mas file
@@ -56,7 +56,7 @@ std::optional<Com::Mas::Value> load_mas_file(std::filesystem::path const &path)
 
 bool save_file(std::filesystem::path const &path, std::string_view buf)
 {
-	return mkdirs(path.parent_path()) && std::ofstream(path).write(buf.data(), buf.size());
+	return mkdirs(path.parent_path()) && std::ofstream(path).write(buf.data(), (std::streamsize)buf.size());
 }
 
 bool save_pretty_mas_file(std::filesystem::path const &path, Mas::Value const &mas)

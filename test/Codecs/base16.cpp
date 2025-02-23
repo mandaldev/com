@@ -15,15 +15,15 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "../../src/unit.hpp"
 #include "../../src/Codecs/base16.hpp"
-#include <string>
 #include <cassert>
+#include <string>
 
 TEST(codecs_base16, "Com Codecs base16 test")
 {
 	std::string buf;
 	buf.resize(256);
 	for (int i = 0; i < 256; i++) {
-		buf[i] = i;
+		buf[i] = (char)i;
 	}
 	auto base16 = Com::base16_encode(buf.data(), buf.size());
 	auto decoded = Com::base16_decode(base16);

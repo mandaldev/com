@@ -13,14 +13,14 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef _COM_SRC_STRING_HPP_
-#define _COM_SRC_STRING_HPP_
+#ifndef COM_SRC_STRING_HPP_
+#define COM_SRC_STRING_HPP_
+#include "Range.hpp"
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <string_view>
-#include <cctype>
 #include <vector>
-#include <algorithm>
-#include "Range.hpp"
 
 namespace Com {
 

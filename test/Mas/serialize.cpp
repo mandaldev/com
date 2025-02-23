@@ -53,7 +53,7 @@ TEST(mas_serialize, "Com Mas serializing test")
 		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
 	}
 	{
-		char32_t v(U'中'), v_;
+		char32_t v(U'中'), v_ = 0;
 		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
 	}
 	{
@@ -110,7 +110,7 @@ TEST(mas_serialize, "Com Mas serializing test")
 		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
 	}
 	{
-		Align v = Align::Center, v_;
+		Align v = Align::Center, v_ = Align::Top;
 		assert(Com::Mas::deserialize(Com::Mas::serialize(v), v_) && v_ == v);
 	}
 	// struct A {};

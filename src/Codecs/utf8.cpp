@@ -38,9 +38,6 @@ namespace Com {
 ///
 /// UTF8-tail   = %x80-BF
 
-#define IN_RANGE(c, min, max) Com::is_in_range((int)c, min, max)
-#define IS_TAIL(c) (OCT_TAIL[(int)c])
-
 const static uint8_t OCT_TAIL[256] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -92,6 +89,16 @@ const static uint8_t OCT_HEAD[256] = {
 	// F4
 	               43,
 };
+
+static inline bool IN_RANGE(uint8_t c, int min, int max)
+{
+	return Com::is_in_range((int)c, min, max);
+}
+
+static inline bool IS_TAIL(uint8_t c)
+{
+	return OCT_TAIL[(int)c];
+}
 
 static inline size_t decode_one(const uint8_t *u, size_t len, char32_t *cp)
 {
@@ -186,7 +193,7 @@ std::optional<std::u32string> utf8_decode(std::string_view str)
 	std::u32string out;
 	out.reserve(str.length());
 	while (str.length()) {
-		char32_t cp;
+		char32_t cp = 0;
 		auto n = decode_one((uint8_t const*)str.data(), str.length(), &cp);
 		str.remove_prefix(n);
 		if (n == 0) {

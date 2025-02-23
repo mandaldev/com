@@ -13,8 +13,9 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#ifndef _COM_SRC_FLAGS_HPP_
-#define _COM_SRC_FLAGS_HPP_
+#ifndef COM_SRC_FLAGS_HPP_
+#define COM_SRC_FLAGS_HPP_
+#include <cstdint>
 #include <type_traits>
 
 namespace Com {

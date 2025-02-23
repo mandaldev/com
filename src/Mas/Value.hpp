@@ -16,11 +16,11 @@
 #ifndef MAS_SRC_VALUE_HPP
 #define MAS_SRC_VALUE_HPP
 #include <map>
-#include <vector>
-#include <string>
-#include <variant>
 #include <optional>
 #include <sstream>
+#include <string>
+#include <variant>
+#include <vector>
 
 /// A simple Mas text.
 ///

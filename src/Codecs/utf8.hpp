@@ -15,9 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef DEV_SRC_V_CODECS_UTF8_H
 #define DEV_SRC_V_CODECS_UTF8_H
+#include <optional>
 #include <string>
 #include <string_view>
-#include <optional>
 
 /// UTF-8 codecs
 
