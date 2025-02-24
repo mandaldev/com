@@ -91,7 +91,7 @@ bool deserialize<enum_type>(Value const &mas, enum_type &v) \
 		return false; \
 	} \
 	auto &NE = detial_::name_to_enum<enum_type, __VA_ARGS__>(); \
-	auto it = NE.find(mas.string_or("")); \
+	auto it = NE.find(mas.string()); \
 	if (it != NE.end()) { \
 		v = it->second; \
 		return true; \
@@ -168,7 +168,7 @@ bool number_from_str(T &v, Mas::String const & str)
 template <typename T>
 bool number_from_mas(T &v, Mas::Value const & mas)
 {
-	return mas.is_string() && number_from_str(v, mas.string_or(""));
+	return mas.is_string() && number_from_str(v, mas.string());
 }
 
 template <size_t N, typename Member, typename... Args>
@@ -198,7 +198,7 @@ bool sequence_from_mas(Sequence &c, Mas::Value const &mas, Pusher &&push)
 	if (!mas.is_array()) {
 		return false;
 	}
-	for (auto &item : mas.array_or({})) {
+	for (auto &item : mas.array()) {
 		if constexpr (Com::IsTemplate<Sequence, std::map>::value
 		|| Com::IsTemplate<Sequence, std::unordered_map>::value
 		|| Com::IsTemplate<Sequence, std::multimap>::value
@@ -372,7 +372,7 @@ bool deserialize_map(Mas::Value const &mas, T &v)
 		return false;
 	}
 	v.clear();
-	for (auto &p : mas.map_or({})) {
+	for (auto &p : mas.map()) {
 		typename T::key_type k;
 		if (deserialize(p.first, k)) {
 			typename T::mapped_type item;
@@ -396,7 +396,7 @@ bool deserialize(Mas::Value const &mas, T &v)
 		|| std::is_same_v<T, std::u32string>
 		|| std::is_same_v<T, std::filesystem::path>
 	) {
-		return mas.is_string() && deserialize(mas.string_or(""), v);
+		return mas.is_string() && deserialize(mas.string(), v);
 	} else if constexpr (Com::IsTemplate<T, std::pair>::value) {
 		return deserialize_kvs(mas, COM_KV(v, first), COM_KV(v, second));
 	} else if constexpr (
