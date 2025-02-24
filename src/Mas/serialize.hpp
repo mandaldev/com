@@ -77,7 +77,7 @@ namespace Com::Mas \
 template <> \
 Value serialize<enum_type>(enum_type const &value) \
 { \
-	auto &EN = __detial::enum_to_names<enum_type, __VA_ARGS__>(); \
+	auto &EN = detial_::enum_to_names<enum_type, __VA_ARGS__>(); \
 	auto it = EN.find(value); \
 	if (it != EN.end()) { \
 		return std::string(it->second); \
@@ -90,7 +90,7 @@ bool deserialize<enum_type>(Value const &mas, enum_type &v) \
 	if (!mas.is_string()) { \
 		return false; \
 	} \
-	auto &NE = __detial::name_to_enum<enum_type, __VA_ARGS__>(); \
+	auto &NE = detial_::name_to_enum<enum_type, __VA_ARGS__>(); \
 	auto it = NE.find(mas.string_or("")); \
 	if (it != NE.end()) { \
 		v = it->second; \
@@ -110,7 +110,7 @@ template <> bool deserialize<enum_type>(Value const &mas, enum_type &v); \
 
 // impl
 
-namespace __detial {
+namespace detial_ {
 
 extern bool Deserialize_Of_This_Type_Not_Implemented;
 extern Mas::Value Serialize_Of_This_Type_Not_Implemented;
@@ -276,9 +276,9 @@ Mas::Value serialize(V const &v)
 	} else if constexpr (std::is_same_v<T, char32_t>) {
 		return utf8_encode(std::u32string(1, v)).value_or("\0");
 	} else if constexpr (std::is_integral_v<T>) {
-		return __detial::number_to_mas(v, 10);
+		return detial_::number_to_mas(v, 10);
 	} else if constexpr (std::is_floating_point_v<T>) {
-		return __detial::number_to_mas(v, std::chars_format::scientific, 32);
+		return detial_::number_to_mas(v, std::chars_format::scientific, 32);
 	} else if constexpr (std::is_same_v<T, std::string>) {
 		return v;
 	} else if constexpr (std::is_same_v<T, std::u32string>) {
@@ -316,7 +316,7 @@ Mas::Value serialize(V const &v)
 		}
 		return a;
 	}
-	return __detial::Serialize_Of_This_Type_Not_Implemented;
+	return detial_::Serialize_Of_This_Type_Not_Implemented;
 }
 
 /// from string
@@ -348,8 +348,8 @@ bool deserialize(Mas::String const &str, T &v)
 		v = us.value()[0];
 		return true;
 	} else if constexpr (std::is_arithmetic_v<T>) {
-		return __detial::number_from_str(v, str);
-	} else if constexpr (std::is_same_v<T, std::string>) {
+		return detial_::number_from_str(v, str);
+	} else if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::filesystem::path>) {
 		v = str;
 		return true;
 	} else if constexpr (std::is_same_v<T, std::u32string>) {
@@ -360,12 +360,8 @@ bool deserialize(Mas::String const &str, T &v)
 			return true;
 		}
 		return false;
-	} else if constexpr (std::is_same_v<T, std::filesystem::path>) {
-		// as string
-		v = str;
-		return true;
 	}
-	return __detial::Deserialize_Of_This_Type_Not_Implemented;
+	return detial_::Deserialize_Of_This_Type_Not_Implemented;
 }
 
 template <typename T>
@@ -415,31 +411,31 @@ bool deserialize(Mas::Value const &mas, T &v)
 		return deserialize_map(mas, v);
 	} else if constexpr (Com::IsTemplate<T, std::variant>::value) {
 		if constexpr (0 < std::variant_size_v<T>) {
-			if (__detial::deserialize_variant<0>(mas, v)) {
+			if (detial_::deserialize_variant<0>(mas, v)) {
 				return true;
 			}
 		}
 		if constexpr (1 < std::variant_size_v<T>) {
-			if (__detial::deserialize_variant<1>(mas, v)) {
+			if (detial_::deserialize_variant<1>(mas, v)) {
 				return true;
 			}
 		}
 		if constexpr (2 < std::variant_size_v<T>) {
-			if (__detial::deserialize_variant<2>(mas, v)) {
+			if (detial_::deserialize_variant<2>(mas, v)) {
 				return true;
 			}
 		}
 		return false;
-	} else if constexpr (__detial::Insertable<T>::value) {
+	} else if constexpr (detial_::Insertable<T>::value) {
 		// other containers
 		// use Mas::Array
-		return __detial::sequence_from_mas(v, mas, [](T &seq, auto &&item) { seq.insert(std::move(item)); });
-	} else if constexpr (__detial::Pushbackable<T>::value) {
+		return detial_::sequence_from_mas(v, mas, [](T& seq, auto&& item) { seq.insert(std::forward<decltype(item)>(item)); });
+	} else if constexpr (detial_::Pushbackable<T>::value) {
 		// other containers
 		// use Mas::Array
-		return __detial::sequence_from_mas(v, mas, [](T &seq, auto &&item) { seq.push_back(std::move(item)); });
+		return detial_::sequence_from_mas(v, mas, [](T& seq, auto&& item) { seq.push_back(std::forward<decltype(item)>(item)); });
 	}
-	return __detial::Deserialize_Of_This_Type_Not_Implemented;
+	return detial_::Deserialize_Of_This_Type_Not_Implemented;
 }
 
 template <typename... KVs>
@@ -447,7 +443,7 @@ Mas::Value serialize_kvs(KVs&&... args)
 {
 	Mas::Value mas;
 	auto &map = mas.as_map();
-	__detial::struct_to_mas_impl(map, std::forward<KVs>(args)...);
+	detial_::struct_to_mas_impl(map, std::forward<KVs>(args)...);
 	return mas;
 }
 
@@ -457,8 +453,8 @@ bool deserialize_kvs(Mas::Value const &mas, KVs&&... args)
 	if (!mas.is_map()) {
 		return false;
 	}
-	auto &map = mas.map_or({});
-	__detial::struct_from_mas_impl(map, std::forward<KVs>(args)...);
+	auto &map = mas.map();
+	detial_::struct_from_mas_impl(map, std::forward<KVs>(args)...);
 	return true;
 }
 

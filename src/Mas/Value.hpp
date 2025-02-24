@@ -105,23 +105,41 @@ public:
 	Value(String const &src): _var(src) {}
 	Value(char const *src): _var(String(src)) {}
 
-	/// type checker
+	/// returns true if contains a map value
+	bool is_map() const noexcept;
 
-	bool is_map() const;
-	bool is_array() const;
-	bool is_string() const;
+	/// returns true if contains a array value
+	bool is_array() const noexcept;
 
-	/// value getter, assign with `src` if type does't match
+	/// returns true if contains a string value
+	bool is_string() const noexcept;
 
+	/// returns contained map value, otherwise drop old value and assign `src` to it
 	Map &as_map(Map const &src = {});
+
+	/// returns contained array value, otherwise drop old value and assign `src` to it
 	Array &as_array(Array const &src = {});
+
+	/// returns contained string value, otherwise drop old value and assign `src` to it
 	String &as_string(String const &src = {});
 
-	/// const value getter, return `what` if type does't match
+	/// returns contained map value or `what`
+	Map map_or(Map const &what) const;
 
-	Map const &map_or(Map const &what) const;
-	Array const &array_or(Array const &what) const;
-	String const &string_or(String const &what) const;
+	/// returns contained array value or `what`
+	Array array_or(Array const &what) const;
+
+	/// returns contained string value or `what`
+	String string_or(String const &what) const;
+
+	/// returns contained map value, otherwise raise a std::bad_variant_access except
+	Map const &map() const;
+
+	/// returns contained array value, otherwise raise a std::bad_variant_access except
+	Array const &array() const;
+
+	/// returns contained string value, otherwise raise a std::bad_variant_access except
+	String const &string() const;
 
 	template <typename Visitor>
 	auto visit_by(Visitor &visitor) const

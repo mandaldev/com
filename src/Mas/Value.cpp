@@ -21,18 +21,19 @@ namespace Com::Mas {
 
 static inline bool is_key_char(char c)
 {
-	if (c >= 33 // '!'
-	&& c <= 126 // '~'
-	) {
+	// '!'
+	// '~'
+	if (c >= 33 && c <= 126) {
 		switch (c) {
 		case 123: // '{'
 		case 125: // '}'
 		case 91: // '['
 		case 93: // ']'
 		case 34: // '"'
-		return false;
+			return false;
+		default:
+			return true;
 		}
-		return true;
 	}
 	return false;
 }
@@ -47,17 +48,17 @@ static bool is_key_need_quote(String const &key)
 	return std::any_of(key.cbegin(), key.cend(), is_not_key_char);
 }
 
-bool Value::is_map() const
+bool Value::is_map() const noexcept
 {
 	return std::holds_alternative<Map>(_var);
 }
 
-bool Value::is_array() const
+bool Value::is_array() const noexcept
 {
 	return std::holds_alternative<Array>(_var);
 }
 
-bool Value::is_string() const
+bool Value::is_string() const noexcept
 {
 	return std::holds_alternative<String>(_var);
 }
@@ -86,7 +87,7 @@ String &Value::as_string(String const &src)
 	return std::get<String>(_var);
 }
 
-Map const &Value::map_or(Map const &what) const
+Map Value::map_or(Map const &what) const
 {
 	if (std::holds_alternative<Map>(_var)) {
 		return std::get<Map>(_var);
@@ -95,7 +96,7 @@ Map const &Value::map_or(Map const &what) const
 	}
 }
 
-Array const &Value::array_or(Array const &what) const
+Array Value::array_or(Array const &what) const
 {
 	if (std::holds_alternative<Array>(_var)) {
 		return std::get<Array>(_var);
@@ -104,13 +105,28 @@ Array const &Value::array_or(Array const &what) const
 	}
 }
 
-String const &Value::string_or(String const &what) const
+String Value::string_or(String const &what) const
 {
 	if (std::holds_alternative<String>(_var)) {
 		return std::get<String>(_var);
 	} else {
 		return what;
 	}
+}
+
+Map const& Value::map() const
+{
+	return std::get<Map>(_var);
+}
+
+Array const& Value::array() const
+{
+	return std::get<Array>(_var);
+}
+
+String const& Value::string() const
+{
+	return std::get<String>(_var);
 }
 
 class Encoder
@@ -280,7 +296,7 @@ private:
 				return true;
 			}
 		};
-		_pos = std::find_if(_source.begin() + _pos, _source.end(), pred) - _source.begin();
+		_pos = std::find_if(_source.begin() + (std::ptrdiff_t)_pos, _source.end(), pred) - _source.begin();
 	}
 
 	// has reach end-of-source
@@ -311,6 +327,7 @@ private:
 				case 'r': c = 0xd; break;
 				case 't': c = 0x9; break;
 				case 'v': c = 0xb; break;
+				default: break;
 				}
 			} else if (c == '"') {
 				break;
@@ -321,8 +338,8 @@ private:
 
 	void forward_unquoted(TokenType &type, String &token)
 	{
-		auto unquoted_end = std::find_if_not(_source.begin() + _pos, _source.end(), is_key_char);
-		token = String(_source.begin() + _pos, unquoted_end);
+		auto unquoted_end = std::find_if_not(_source.begin() + (std::ptrdiff_t)_pos, _source.end(), is_key_char);
+		token = String(_source.begin() + (std::ptrdiff_t)_pos, unquoted_end);
 		_pos = unquoted_end - _source.begin();
 		if (token.empty()) {
 			type = TokenType::end;
@@ -450,7 +467,7 @@ bool get_string(Mas::Map const &m, std::string const &key, std::string &value)
 	auto it = m.find(key);
 	if (it != m.end()) {
 		if (it->second.is_string()) {
-			value = it->second.string_or({});
+			value = it->second.string();
 			return true;
 		}
 	}
