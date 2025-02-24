@@ -16,9 +16,9 @@
 #ifndef MAS_SRC_COMMANDLINE_HPP
 #define MAS_SRC_COMMANDLINE_HPP
 #include <map>
-#include <vector>
-#include <string>
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace Com {
 

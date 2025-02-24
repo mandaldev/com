@@ -26,7 +26,7 @@
 namespace Com {
 
 // hide details
-namespace __detial {
+namespace detial_ {
 
 template <typename... Args>
 struct Test1
@@ -51,13 +51,13 @@ struct IsTemplate
 {};
 
 template <typename T, template <typename...> typename Template>
-struct IsTemplate<T, Template, std::void_t<decltype(__detial::take_template<Template>(std::declval<T>()))>>
+struct IsTemplate<T, Template, std::void_t<decltype(detial_::take_template<Template>(std::declval<T>()))>>
 : std::true_type
 {};
 
 // test
-static_assert(IsTemplate<__detial::Test1<int>, __detial::Test1>::value);
-static_assert(!IsTemplate<__detial::Test1<int>, __detial::Test2>::value);
+static_assert(IsTemplate<detial_::Test1<int>, detial_::Test1>::value);
+static_assert(!IsTemplate<detial_::Test1<int>, detial_::Test2>::value);
 
 template <typename T>
 inline constexpr bool IS_MAP = Com::IsTemplate<T, std::map>::value
@@ -78,13 +78,13 @@ struct IsTemplateWith
 {};
 
 template <typename T, template <typename...> typename Template, typename First>
-struct IsTemplateWith<T, Template, First, std::void_t<decltype(__detial::take_template_with<First, Template>(std::declval<T>()))>>
+struct IsTemplateWith<T, Template, First, std::void_t<decltype(detial_::take_template_with<First, Template>(std::declval<T>()))>>
 : std::true_type
 {};
 
 // test
-static_assert(IsTemplateWith<__detial::Test1<int, bool>, __detial::Test1, int>::value);
-static_assert(!IsTemplateWith<__detial::Test1<int, bool>, __detial::Test2, int>::value);
+static_assert(IsTemplateWith<detial_::Test1<int, bool>, detial_::Test1, int>::value);
+static_assert(!IsTemplateWith<detial_::Test1<int, bool>, detial_::Test2, int>::value);
 
 template <typename T, typename W>
 inline constexpr bool IS_MAP_WITH = Com::IsTemplateWith<T, std::map, W>::value
@@ -131,7 +131,7 @@ struct Iterable<T, std::void_t<decltype(std::begin(std::declval<T>())), decltype
 
 // test
 static_assert(Iterable<int[1]>::value);
-static_assert(!Iterable<__detial::Test1<int>>::value);
+static_assert(!Iterable<detial_::Test1<int>>::value);
 
 // test T is any type of ...
 template <typename T, typename... Any>

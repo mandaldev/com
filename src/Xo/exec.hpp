@@ -15,8 +15,8 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef CGEN_SRC_XO_EXEC_HPP
 #define CGEN_SRC_XO_EXEC_HPP
-#include <string>
 #include <filesystem>
+#include <string>
 
 namespace Com {
 

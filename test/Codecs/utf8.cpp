@@ -15,13 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "../../src/unit.hpp"
 #include "../../src/Codecs/utf8.hpp"
-#include <string>
 #include <cassert>
+#include <string>
 
 TEST(codecs_utf8, "Com Codecs utf8 test")
 {
 	std::u32string buf;
-	buf.reserve(4 * 128);
+	buf.reserve((size_t)4 * 128);
 	for (auto bits : { 0, 7, 11, 16 }) {
 		int c = 1 << bits;
 		for (int i = 0; i < 128; i++) {

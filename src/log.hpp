@@ -23,17 +23,17 @@
 
 // hide log impl detial
 
-namespace Com::__v_logger {
+namespace Com::v_logger_ {
 
-struct __fakelogger
+struct FakeLogger
 {
-	__fakelogger(char const *, int, const char *, const char *) {}
-	template <typename T> __fakelogger &operator<<(T const &) { return *this; }
+	FakeLogger(char const *, int, const char *, const char *) {}
+	template <typename T> FakeLogger &operator<<(T const &) { return *this; }
 };
 
-struct __logger
+struct Logger
 {
-	__logger(char const *file, int line, const char *func, const char *severity)
+	Logger(char const *file, int line, const char *func, const char *severity)
 	{
 		auto t_now = std::chrono::system_clock::now();
 		auto us = std::chrono::duration_cast<std::chrono::microseconds>(t_now.time_since_epoch()).count();
@@ -46,13 +46,13 @@ struct __logger
 			;
 	}
 
-	~__logger()
+	~Logger()
 	{
 		std::cerr << "\n";
 	}
 
 	template <typename T>
-	__logger &operator<<(T const &t)
+	Logger &operator<<(T const &t)
 	{
 		std::cerr << t;
 		return *this;
@@ -60,14 +60,14 @@ struct __logger
 };
 
 #ifndef NDEBUG
-#define LOG_DEBUG Com::__v_logger::__logger(__FILE__, __LINE__, __func__, "Debug")
+#define LOG_DEBUG Com::v_logger_::Logger(__FILE__, __LINE__, __func__, "Debug")
 #else
-#define LOG_DEBUG Com::__v_logger::__fakelogger(__FILE__, __LINE__, __func__, "Debug")
+#define LOG_DEBUG Com::v_logger_::FakeLogger(__FILE__, __LINE__, __func__, "Debug")
 #endif
-#define LOG_INFO Com::__v_logger::__logger(__FILE__, __LINE__, __func__, "Info")
-#define LOG_WARN Com::__v_logger::__logger(__FILE__, __LINE__, __func__, "Warn")
-#define LOG_ERROR Com::__v_logger::__logger(__FILE__, __LINE__, __func__, "Error")
-#define LOG_FATAL Com::__v_logger::__logger(__FILE__, __LINE__, __func__, "Fatal")
+#define LOG_INFO Com::v_logger_::Logger(__FILE__, __LINE__, __func__, "Info")
+#define LOG_WARN Com::v_logger_::Logger(__FILE__, __LINE__, __func__, "Warn")
+#define LOG_ERROR Com::v_logger_::Logger(__FILE__, __LINE__, __func__, "Error")
+#define LOG_FATAL Com::v_logger_::Logger(__FILE__, __LINE__, __func__, "Fatal")
 
 }
 #endif

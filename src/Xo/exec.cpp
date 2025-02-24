@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "exec.hpp"
-#include <iterator>
-#include <fstream>
-#include <filesystem>
 #include <cassert>
+#include <filesystem>
+#include <fstream>
+#include <iterator>
 using namespace std::literals;
 
 static inline std::string get_tmpnam(std::string const &tmpname)
