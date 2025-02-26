@@ -18,13 +18,11 @@
 #include "../Codecs/utf8.hpp"
 #include "../meta.hpp"
 #include "Value.hpp"
+#include <array>
 #include <charconv>
 #include <filesystem>
-#include <functional>
 #include <map>
-#include <set>
 #include <unordered_map>
-#include <unordered_set>
 #include <variant>
 
 /// Serialize API
