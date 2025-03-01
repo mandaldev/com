@@ -29,10 +29,10 @@
 /// 	// your testing code
 /// }
 /// ```
-#define TEST(name, ...) struct name##__test_type {\
-	name##__test_type(); \
+#define TEST(name, ...) struct name##_test_type {\
+	name##_test_type(); \
 }; \
-static name##__test_type name##__test_obj; \
-inline name##__test_type::name##__test_type()
+static name##_test_type name##_test_obj; \
+inline name##_test_type::name##_test_type()
 
 #endif
