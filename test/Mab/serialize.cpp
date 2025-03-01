@@ -19,7 +19,7 @@
 #include <vector>
 #include "../../src/Mab/serialize.hpp"
 
-TEST(mab_serialize, "Com Mas serializing test")
+TEST(mab_serialize, "Com Mab serializing test")
 {
 	using namespace Com::Mab;
 
