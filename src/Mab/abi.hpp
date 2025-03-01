@@ -150,8 +150,9 @@ static inline std::size_t scalar_type_size(uint8_t abi)
 	case basic_type_abi<double>():
 		static_assert(sizeof(double) == sizeof(int64_t), "double is not 64-bit");
 		return 8;
+	default:
+		return 0;
 	}
-	return 0;
 }
 
 }

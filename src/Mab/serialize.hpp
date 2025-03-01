@@ -15,17 +15,17 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_MAB_SERIALIZE_HPP
 #define COM_SRC_MAB_SERIALIZE_HPP
-#include "abi.hpp"
 #include "../meta.hpp"
+#include "abi.hpp"
 #include <cstdint>
 #include <functional>
+#include <map>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
-#include <map>
 
 /// Mab: Map, Array and Binary -- a binary serialization format
 namespace Com::Mab {
@@ -146,7 +146,8 @@ template <typename V>
 bool deserialize_array(Bytes const &in, size_t &pos, V &v)
 {
 	using T = std::remove_reference_t<V>;
-	if (in.size() >= pos + 2 && in[pos++] == array_abi) {
+	if (in.size() >= pos + 2 && in[pos] == array_abi) {
+		pos += 1;
 		v.clear();
 		while (in.size() > pos && in[pos] != abi_end) {
 			typename T::value_type e{};
@@ -256,7 +257,8 @@ bool deserialize(Bytes const &in, size_t &pos, V &v)
 		}
 		return detial_::deserialize_array(in, pos, v);
 	} else if constexpr (IsTemplate<T, std::map>::value || IsTemplate<T, std::unordered_map>::value) {
-		if (in.size() >= pos + 2 && in[pos++] == map_abi) {
+		if (in.size() >= pos + 2 && in[pos] == map_abi) {
+			pos += 1;
 			v.clear();
 			while (in.size() > pos && in[pos] != abi_end) {
 				typename T::key_type key{};
@@ -290,9 +292,10 @@ bool deserialize(Bytes const &in, size_t &pos, V &v)
 template <typename... KVs>
 bool deserialize_kvs(Bytes const &in, size_t &pos, KVs&&... args)
 {
-	if (in.size() < pos + 2 || in[pos++] != map_abi) {
+	if (in.size() < pos + 2 || in[pos] != map_abi) {
 		return false;
 	}
+	pos += 1;
 	std::map<std::string_view, std::function<bool(Bytes const &in, size_t &pos)>> members;
 	detial_::deserialize_struct_push_members(members, std::forward<KVs>(args)...);
 	while (in.size() > pos && in[pos] != abi_end) {

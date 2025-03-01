@@ -147,7 +147,8 @@ bool find_next_value_pos(Bytes const &in, size_t &pos)
 				return false;
 			}
 		}
-		if (pos < in.size() && in[pos++] == abi_end) {
+		if (pos < in.size() && in[pos] == abi_end) {
+			pos += 1;
 			return true;
 		}
 		break;
@@ -157,9 +158,12 @@ bool find_next_value_pos(Bytes const &in, size_t &pos)
 				return false;
 			}
 		}
-		if (pos < in.size() && in[pos++] == abi_end) {
+		if (pos < in.size() && in[pos] == abi_end) {
+			pos += 1;
 			return true;
 		}
+		break;
+	default:
 		break;
 	}
 	return false;

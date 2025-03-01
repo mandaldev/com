@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "../../src/unit.hpp"
+#include "../../src/Mab/serialize.hpp"
 #include <cstdint>
 #include <optional>
 #include <vector>
-#include "../../src/Mab/serialize.hpp"
 
 TEST(mab_serialize, "Com Mab serializing test")
 {
