@@ -18,6 +18,7 @@
         "src/Codecs/utf8.cpp"
         "src/Date.cpp"
         "src/file.cpp"
+        "src/Mab/serialize.cpp"
       ]
 
       install [
@@ -60,6 +61,13 @@
             "src/Codecs/utf8.hpp"
           ]
         }
+        {
+          dir "Com/Mab"
+          headers [
+            "src/Mab/abi.hpp"
+            "src/Mab/serialize.hpp"
+          ]
+        }
       ]
     }
 
@@ -74,6 +82,7 @@
         "test/Codecs/base16.cpp"
         "test/Codecs/utf8.cpp"
         "test/Mas/serialize.cpp"
+        "test/Mab/serialize.cpp"
       ]
 
       dep [
