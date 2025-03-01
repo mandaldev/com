@@ -75,7 +75,7 @@ namespace Com::Mas \
 template <> \
 Value serialize<enum_type>(enum_type const &value) \
 { \
-	auto &EN = detial_::enum_to_names<enum_type, __VA_ARGS__>(); \
+	auto &EN = enum_to_names<enum_type, __VA_ARGS__>(); \
 	auto it = EN.find(value); \
 	if (it != EN.end()) { \
 		return std::string(it->second); \
@@ -88,7 +88,7 @@ bool deserialize<enum_type>(Value const &mas, enum_type &v) \
 	if (!mas.is_string()) { \
 		return false; \
 	} \
-	auto &NE = detial_::name_to_enum<enum_type, __VA_ARGS__>(); \
+	auto &NE = name_to_enum<enum_type, __VA_ARGS__>(); \
 	auto it = NE.find(mas.string()); \
 	if (it != NE.end()) { \
 		v = it->second; \
@@ -114,33 +114,6 @@ extern bool Deserialize_Of_This_Type_Not_Implemented;
 extern Mas::Value Serialize_Of_This_Type_Not_Implemented;
 
 /// test `T` can be inserted with one item
-template <typename T, typename = void>
-struct Insertable
-: std::false_type
-{};
-
-template <typename T>
-struct Insertable<T, std::enable_if_t<true, decltype(std::declval<std::remove_reference_t<T>>().insert({}))>>
-: std::true_type
-{};
-
-static_assert(Insertable<std::map<int, int>>::value);
-static_assert(!Insertable<const std::map<int, int>>::value);
-
-/// test `T` can be push back with one item
-template <typename T, typename = void>
-struct Pushbackable
-: std::false_type
-{};
-
-template <typename T>
-struct Pushbackable<T, std::enable_if_t<true, decltype(std::declval<std::remove_reference_t<T>>().push_back({}))>>
-: std::true_type
-{};
-
-static_assert(Pushbackable<std::vector<int>>::value);
-static_assert(!Pushbackable<const std::vector<int>>::value);
-
 template <typename T, typename... Args>
 Mas::Value number_to_mas(T v, Args&&... args)
 {
@@ -225,40 +198,6 @@ bool deserialize_variant(Mas::Value const &mas, T &v)
 		return true;
 	}
 	return false;
-}
-
-template <typename T, T t>
-constexpr char const *get_raw_enum_name()
-{
-	// NOTE gcc feature only
-	return __PRETTY_FUNCTION__;
-}
-
-template <typename T, T t>
-constexpr std::string_view scrape_enum_name()
-{
-	std::string_view raw_name = get_raw_enum_name<T, t>();
-	auto e = raw_name.find_last_of(']');
-	auto b = raw_name.find_last_of(':', e);
-	return raw_name.substr(b + 1, e - b - 1);
-}
-
-template <typename T, T... enums>
-std::map<T, std::string_view> const &enum_to_names()
-{
-	static const std::map<T, std::string_view> map = {
-		{enums, scrape_enum_name<T, enums>()}...
-	};
-	return map;
-}
-
-template <typename T, T... enums>
-std::map<std::string_view, T> const &name_to_enum()
-{
-	static const std::map<std::string_view, T> map = {
-		{scrape_enum_name<T, enums>(), enums}...
-	};
-	return map;
 }
 
 }
@@ -424,11 +363,11 @@ bool deserialize(Mas::Value const &mas, T &v)
 			}
 		}
 		return false;
-	} else if constexpr (detial_::Insertable<T>::value) {
+	} else if constexpr (Insertable<T>::value) {
 		// other containers
 		// use Mas::Array
 		return detial_::sequence_from_mas(v, mas, [](T& seq, auto&& item) { seq.insert(std::forward<decltype(item)>(item)); });
-	} else if constexpr (detial_::Pushbackable<T>::value) {
+	} else if constexpr (Pushbackable<T>::value) {
 		// other containers
 		// use Mas::Array
 		return detial_::sequence_from_mas(v, mas, [](T& seq, auto&& item) { seq.push_back(std::forward<decltype(item)>(item)); });

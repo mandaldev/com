@@ -15,13 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_META_HPP_
 #define COM_SRC_META_HPP_
-#include <cstdint>
 #include <iterator>
 #include <map>
 #include <set>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 namespace Com {
 
@@ -155,5 +155,71 @@ struct HasEqualOp<T, std::void_t<decltype(std::declval<T>() == std::declval<T>()
 
 static_assert(HasEqualOp<int>::value);
 
+/// test `T` can be inserted with one item
+template <typename T, typename = void>
+struct Insertable
+: std::false_type
+{};
+
+template <typename T>
+struct Insertable<T, std::enable_if_t<true, decltype(std::declval<std::remove_reference_t<T>>().insert({}))>>
+: std::true_type
+{};
+
+static_assert(Insertable<std::map<int, int>>::value);
+static_assert(!Insertable<const std::map<int, int>>::value);
+
+/// test `T` can be push back with one item
+template <typename T, typename = void>
+struct Pushbackable
+: std::false_type
+{};
+
+template <typename T>
+struct Pushbackable<T, std::enable_if_t<true, decltype(std::declval<std::remove_reference_t<T>>().push_back({}))>>
+: std::true_type
+{};
+
+static_assert(Pushbackable<std::vector<int>>::value);
+static_assert(!Pushbackable<const std::vector<int>>::value);
+
+// hide details
+namespace detial_ {
+
+template <typename T, T t>
+constexpr char const *get_raw_enum_name()
+{
+	// NOTE gcc feature only
+	return __PRETTY_FUNCTION__;
+}
+
+template <typename T, T t>
+constexpr std::string_view scrape_enum_name()
+{
+	std::string_view raw_name = get_raw_enum_name<T, t>();
+	auto e = raw_name.find_last_of(']');
+	auto b = raw_name.find_last_of(':', e);
+	return raw_name.substr(b + 1, e - b - 1);
+}
+
+}
+
+template <typename T, T... enums>
+std::map<T, std::string_view> const &enum_to_names()
+{
+	static const std::map<T, std::string_view> map = {
+		{enums, detial_::scrape_enum_name<T, enums>()}...
+	};
+	return map;
+}
+
+template <typename T, T... enums>
+std::map<std::string_view, T> const &name_to_enum()
+{
+	static const std::map<std::string_view, T> map = {
+		{detial_::scrape_enum_name<T, enums>(), enums}...
+	};
+	return map;
+}
 }
 #endif
