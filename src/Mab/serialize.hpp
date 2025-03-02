@@ -39,44 +39,50 @@ using Bytes = std::vector<uint8_t>;
 
 struct BytesView
 {
-	Bytes::const_iterator _begin;
-	Bytes::const_iterator _end;
+	uint8_t const *_data = nullptr;
+	size_t _size = 0;
 
 	BytesView(Bytes const &bytes)
-	: _begin(bytes.begin())
-	, _end(bytes.end())
+	: _data(bytes.data())
+	, _size(bytes.size())
 	{}
 
+	BytesView(uint8_t const *bytes, size_t count)
+	: _data(bytes)
+	, _size(count)
+	{
+	}
+
 	BytesView(Bytes const &bytes, size_t pos, size_t count)
-	: _begin(bytes.begin() + (std::ptrdiff_t)pos)
-	, _end(bytes.begin() + (std::ptrdiff_t)pos + (std::ptrdiff_t)count)
+	: _data(bytes.data() + (std::ptrdiff_t)pos)
+	, _size(count)
 	{
 	}
 
 	BytesView(Bytes::const_iterator begin, Bytes::const_iterator end)
-	: _begin(begin)
-	, _end(end)
+	: _data(begin.base())
+	, _size(end - begin)
 	{
 	}
 
 	uint8_t const &operator[](size_t index) const
 	{
-		return *(_begin + (std::ptrdiff_t)index);
+		return _data[index];
 	}
 
 	uint8_t const *data() const
 	{
-		return _begin.base();
+		return _data;
 	}
 
 	size_t size() const
 	{
-		return _end - _begin;
+		return _size;
 	}
 
 	bool empty() const
 	{
-		return _begin == _end;
+		return _size;
 	}
 };
 
