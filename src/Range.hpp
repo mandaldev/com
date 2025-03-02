@@ -15,8 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_RANGE_HPP_
 #define COM_SRC_RANGE_HPP_
+#include "meta.hpp"
+#include <cstdint>
+#include <iterator>
 
 namespace Com {
+
+template <typename Begin, typename End>
+auto make_range(Begin b, End e);
 
 /// Wrap `c.begin(), c.end()` as a container
 /// This `Range` is very basic, since iterators wrapped could be
@@ -26,36 +32,45 @@ template <typename Begin, typename End>
 class Range
 {
 public:
-	Range(Begin b, End e)
-	: _b(b)
-	, _e(e)
+	Range(Begin b, End e) : _b(b) , _e(e) {}
+
+	template <typename T>
+	Range(T *p, size_t count)
+	: _b(p)
+	, _e(p + count)
 	{
 	}
 
-	auto begin() const
+	auto sub_range(size_t offset, size_t count)
 	{
-		return _b;
+		assert(offset + count >= size());
+		auto b = _b;
+		std::advance(b, offset);
+		auto e = b;
+		std::advance(e, count);
+		return make_range(b, e);
 	}
 
-	auto end() const
+	auto begin() { return _b; }
+	auto end() { return _e; }
+
+	auto rbegin() { return std::prev(_e); }
+	auto rend() { return std::prev(_b); }
+
+	auto data() { return &(*_b); }
+
+	auto &operator[](std::size_t index)
 	{
-		return _e;
+		auto b = _b;
+		std::advance(b, index);
+		return *b;
 	}
 
-	auto size() const
-	{
-		return _e - _b;
-	}
+	size_t size() const { return (size_t)std::abs(std::distance(_b, _e)); }
 
-	bool empty() const
-	{
-		return _b == _e;
-	}
+	bool empty() const { return _b == _e; }
 
-	void clear()
-	{
-		_b = _e;
-	}
+	void clear() { _b = _e; }
 
 private:
 	Begin _b;
@@ -63,7 +78,7 @@ private:
 };
 
 template <typename Begin, typename End>
-inline auto make_range(Begin b, End e)
+auto make_range(Begin b, End e)
 {
 	return Range<Begin, End>(b, e);
 }
