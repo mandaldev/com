@@ -59,7 +59,7 @@ try {
 	return false;
 }
 
-bool deserialize_basic(Bytes const &in, size_t &pos, uint8_t type, void *data, size_t size)
+bool deserialize_basic(BytesView in, size_t &pos, uint8_t type, void *data, size_t size)
 {
 	if (in.size() < pos + 1 + size) {
 		return false;
@@ -73,7 +73,7 @@ bool deserialize_basic(Bytes const &in, size_t &pos, uint8_t type, void *data, s
 }
 
 bool deserialize_array_basic(
-	Bytes const &in, size_t &pos,
+	BytesView in, size_t &pos,
 	uint8_t element_type, size_t element_size,
 	std::function<void*()> &&data,
 	std::function<void(size_t)> &&resize
@@ -110,7 +110,7 @@ bool deserialize_array_basic(
 	}
 }
 
-bool find_next_value_pos(Bytes const &in, size_t &pos)
+bool find_next_value_pos(BytesView in, size_t &pos)
 {
 	if (in.size() <= pos) {
 		return false;

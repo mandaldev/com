@@ -27,33 +27,65 @@
 #include <utility>
 #include <vector>
 
-/// Mab: Map, Array and Binary -- a binary serialization format
-namespace Com::Mab {
-
-using Bytes = std::vector<uint8_t>;
-
-/// support basic type and enum types (from abi.hpp), plus:
-/// - std::vector
-/// - std::string and std::string_view
-/// - std::map and std::unordered_map
-template <typename T>
-bool serialize(Bytes &out, T const &v);
-
 /// (de)serialize_kvs helper
 #ifndef COM_KV
 #define COM_KV(s, m) #m, s.m
 #endif
 
-/// helper api for serializing user struct types
-/// member can be std::optional type (NOTE: not supported by `serialize`)
+/// Mab: Map, Array and Binary -- a binary serialization format
+namespace Com::Mab {
+
+using Bytes = std::vector<uint8_t>;
+
+struct BytesView
+{
+	Bytes::const_iterator _begin;
+	Bytes::const_iterator _end;
+
+	BytesView(Bytes const &bytes)
+	: _begin(bytes.begin())
+	, _end(bytes.end())
+	{}
+
+	BytesView(Bytes const &bytes, size_t pos, size_t count)
+	: _begin(bytes.begin() + (std::ptrdiff_t)pos)
+	, _end(bytes.begin() + (std::ptrdiff_t)pos + (std::ptrdiff_t)count)
+	{
+	}
+
+	BytesView(Bytes::const_iterator begin, Bytes::const_iterator end)
+	: _begin(begin)
+	, _end(end)
+	{
+	}
+
+	uint8_t const &operator[](size_t index) const
+	{
+		return *(_begin + (std::ptrdiff_t)index);
+	}
+
+	uint8_t const *data() const
+	{
+		return _begin.base();
+	}
+
+	size_t size() const
+	{
+		return _end - _begin;
+	}
+};
+
+template <typename T>
+bool serialize(Bytes &out, T const &v);
+
 template <typename... KVs>
 bool serialize_kvs(Bytes &out, KVs&&... args);
 
 template <typename T>
-bool deserialize(Bytes const &in, size_t &pos, T &v);
+bool deserialize(BytesView in, size_t &pos, T &v);
 
 template <typename... KVs>
-bool deserialize_kvs(Bytes const &in, size_t &pos, KVs&&... args);
+bool deserialize_kvs(BytesView in, size_t &pos, KVs&&... args);
 
 //==============================================================================
 // impl
@@ -63,14 +95,14 @@ namespace detial_ {
 
 bool serialize_basic(Bytes &out, uint8_t type, void const *data, size_t size);
 
-bool deserialize_basic(Bytes const &in, size_t &pos, uint8_t type, void *data, size_t size);
+bool deserialize_basic(BytesView in, size_t &pos, uint8_t type, void *data, size_t size);
 
 // A0 Type
 // An LEN Type v...
 bool serialize_array_basic(Bytes &out, uint8_t element_type, size_t element_size, size_t count, void const *data);
 
 bool deserialize_array_basic(
-	Bytes const &in, size_t &pos,
+	BytesView in, size_t &pos,
 	uint8_t element_type, size_t element_size,
 	std::function<void*()> &&data,
 	std::function<void(size_t)> &&resize
@@ -101,10 +133,10 @@ bool serialize_struct_impl(Bytes &out, const char (&name)[N], Member const &memb
 
 template <size_t N, typename Member, typename... Args>
 void deserialize_struct_push_members(
-	std::map<std::string_view, std::function<bool(Bytes const &in, size_t &pos)>> &members,
+	std::map<std::string_view, std::function<bool(BytesView in, size_t &pos)>> &members,
 	const char (&name)[N], Member &member, Args&&... args)
 {
-	members[name] = [&member](Bytes const &in, size_t &pos)
+	members[name] = [&member](BytesView in, size_t &pos)
 	{
 		using Type = std::remove_const_t<std::remove_reference_t<Member>>;
 		if constexpr (IsTemplate<Type, std::optional>::value) {
@@ -143,7 +175,7 @@ bool serialize_array(Bytes &out, V const &v)
 
 // normal array
 template <typename V>
-bool deserialize_array(Bytes const &in, size_t &pos, V &v)
+bool deserialize_array(BytesView in, size_t &pos, V &v)
 {
 	using T = std::remove_reference_t<V>;
 	if (in.size() >= pos + 2 && in[pos] == array_abi) {
@@ -168,10 +200,14 @@ bool deserialize_array(Bytes const &in, size_t &pos, V &v)
 	return false;
 }
 
-bool find_next_value_pos(Bytes const &in, size_t &pos);
+bool find_next_value_pos(BytesView in, size_t &pos);
 
 }
 
+/// support basic type and enum types (from abi.hpp), plus:
+/// - std::vector
+/// - std::string and std::string_view
+/// - std::map and std::unordered_map
 template <typename V>
 bool serialize(Bytes &out, V const &v)
 {
@@ -213,6 +249,8 @@ bool serialize(Bytes &out, V const &v)
 	return false;
 }
 
+/// helper api for serializing user struct types
+/// member can be std::optional type (NOTE: not supported by `serialize`)
 template <typename... KVs>
 bool serialize_kvs(Bytes &out, KVs&&... args)
 {
@@ -229,7 +267,7 @@ bool serialize_kvs(Bytes &out, KVs&&... args)
 }
 
 template <typename V>
-bool deserialize(Bytes const &in, size_t &pos, V &v)
+bool deserialize(BytesView in, size_t &pos, V &v)
 {
 	using T = std::remove_reference_t<V>;
 	if constexpr (basic_type_abi<T>() > 0) {
@@ -290,13 +328,13 @@ bool deserialize(Bytes const &in, size_t &pos, V &v)
 }
 
 template <typename... KVs>
-bool deserialize_kvs(Bytes const &in, size_t &pos, KVs&&... args)
+bool deserialize_kvs(BytesView in, size_t &pos, KVs&&... args)
 {
 	if (in.size() < pos + 2 || in[pos] != map_abi) {
 		return false;
 	}
 	pos += 1;
-	std::map<std::string_view, std::function<bool(Bytes const &in, size_t &pos)>> members;
+	std::map<std::string_view, std::function<bool(BytesView in, size_t &pos)>> members;
 	detial_::deserialize_struct_push_members(members, std::forward<KVs>(args)...);
 	while (in.size() > pos && in[pos] != abi_end) {
 		std::string key;
