@@ -73,6 +73,11 @@ struct BytesView
 	{
 		return _end - _begin;
 	}
+
+	bool empty() const
+	{
+		return _begin == _end;
+	}
 };
 
 template <typename T>
