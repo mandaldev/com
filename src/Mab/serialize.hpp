@@ -332,6 +332,13 @@ bool deserialize(BytesView in, size_t &pos, V &v)
 	return false;
 }
 
+template <typename V>
+bool deserialize(BytesView in, V &v)
+{
+	size_t pos = 0;
+	return deserialize(in, pos, v);
+}
+
 template <typename... KVs>
 bool deserialize_kvs(BytesView in, size_t &pos, KVs&&... args)
 {
@@ -360,6 +367,13 @@ bool deserialize_kvs(BytesView in, size_t &pos, KVs&&... args)
 	}
 	pos += 1;
 	return true;
+}
+
+template <typename... KVs>
+bool deserialize_kvs(BytesView in, KVs&&... args)
+{
+	size_t pos = 0;
+	return deserialize(in, pos, std::forward<KVs>(args)...);
 }
 
 }
