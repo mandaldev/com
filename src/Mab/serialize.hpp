@@ -373,7 +373,7 @@ template <typename... KVs>
 bool deserialize_kvs(BytesView in, KVs&&... args)
 {
 	size_t pos = 0;
-	return deserialize(in, pos, std::forward<KVs>(args)...);
+	return deserialize_kvs(in, pos, std::forward<KVs>(args)...);
 }
 
 }
