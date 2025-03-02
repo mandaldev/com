@@ -47,6 +47,11 @@ struct BytesView
 	, _size(bytes.size())
 	{}
 
+	BytesView(std::string_view str)
+	: _data((uint8_t const *)str.data())
+	, _size(str.size())
+	{}
+
 	BytesView(uint8_t const *bytes, size_t count)
 	: _data(bytes)
 	, _size(count)
