@@ -41,7 +41,7 @@ public:
 	{
 	}
 
-	auto sub_range(size_t offset, size_t count)
+	auto sub_range(size_t offset, size_t count) const
 	{
 		assert(offset + count >= size());
 		auto b = _b;
@@ -51,13 +51,13 @@ public:
 		return make_range(b, e);
 	}
 
-	auto begin() { return _b; }
-	auto end() { return _e; }
+	auto begin() const { return _b; }
+	auto end() const { return _e; }
 
-	auto rbegin() { return std::prev(_e); }
-	auto rend() { return std::prev(_b); }
+	auto rbegin() const { return std::prev(_e); }
+	auto rend() const { return std::prev(_b); }
 
-	auto data() { return &(*_b); }
+	auto data() const { return &(*_b); }
 
 	auto &operator[](std::size_t index)
 	{
