@@ -26,6 +26,7 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include <cassert>
 
 /// (de)serialize_kvs helper
 #ifndef COM_KV
@@ -88,6 +89,12 @@ struct BytesView
 	bool empty() const
 	{
 		return _size;
+	}
+
+	BytesView subview(size_t pos, size_t size = size_t(-1))
+	{
+		assert(_size >= size + pos);
+		return BytesView(_data + pos, std::min(_size - pos, size));
 	}
 };
 
