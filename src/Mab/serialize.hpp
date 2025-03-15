@@ -142,7 +142,7 @@ bool serialize_struct_impl(Bytes &out, const char (&name)[N], Member const &memb
 		}
 	}
 	if constexpr (sizeof...(Args)) {
-		return serialize_struct_impl(out, std::forward<Args>(args)...);
+		return serialize_struct_impl(out, std::forward<decltype(args)>(args)...);
 	}
 	return true;
 }
@@ -167,7 +167,7 @@ void deserialize_struct_push_members(
 		}
 	};
 	if constexpr (sizeof...(Args)) {
-		deserialize_struct_push_members(members, std::forward<Args>(args)...);
+		deserialize_struct_push_members(members, std::forward<decltype(args)>(args)...);
 	}
 }
 
@@ -272,7 +272,7 @@ bool serialize_kvs(Bytes &out, KVs&&... args)
 {
 	try {
 		out.push_back(map_abi);
-		if (detial_::serialize_struct_impl(out, std::forward<KVs>(args)...)) {
+		if (detial_::serialize_struct_impl(out, std::forward<decltype(args)>(args)...)) {
 			out.push_back(abi_end);
 			return true;
 		}
@@ -358,7 +358,7 @@ bool deserialize_kvs(BytesView in, size_t &pos, KVs&&... args)
 	}
 	pos += 1;
 	std::map<std::string_view, std::function<bool(BytesView in, size_t &pos)>> members;
-	detial_::deserialize_struct_push_members(members, std::forward<KVs>(args)...);
+	detial_::deserialize_struct_push_members(members, std::forward<decltype(args)>(args)...);
 	while (in.size() > pos && in[pos] != abi_end) {
 		std::string key;
 		if (!deserialize(in, pos, key)) {
@@ -384,7 +384,7 @@ template <typename... KVs>
 bool deserialize_kvs(BytesView in, KVs&&... args)
 {
 	size_t pos = 0;
-	return deserialize_kvs(in, pos, std::forward<KVs>(args)...);
+	return deserialize_kvs(in, pos, std::forward<decltype(args)>(args)...);
 }
 
 }
