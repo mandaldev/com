@@ -88,7 +88,7 @@ struct BytesView
 
 	bool empty() const
 	{
-		return _size;
+		return !_size;
 	}
 
 	BytesView subview(size_t pos, size_t size = size_t(-1))
