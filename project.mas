@@ -38,6 +38,8 @@
             "src/Date.hpp"
 
             "src/log.hpp"
+
+            "src/BytesView.hpp"
           ]
         }
         {

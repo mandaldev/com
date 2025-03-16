@@ -21,6 +21,7 @@
 
 TEST(mab_serialize, "Com Mab serializing test")
 {
+	using namespace Com;
 	using namespace Com::Mab;
 
 	enum class ei8 : int8_t  { a, b };

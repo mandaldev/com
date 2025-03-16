@@ -15,8 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_MAB_SERIALIZE_HPP
 #define COM_SRC_MAB_SERIALIZE_HPP
+#include "../BytesView.hpp"
 #include "../meta.hpp"
 #include "abi.hpp"
+#include <cassert>
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -26,7 +28,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-#include <cassert>
 
 /// (de)serialize_kvs helper
 #ifndef COM_KV
@@ -35,68 +36,6 @@
 
 /// Mab: Map, Array and Binary -- a binary serialization format
 namespace Com::Mab {
-
-using Bytes = std::vector<uint8_t>;
-
-struct BytesView
-{
-	uint8_t const *_data = nullptr;
-	size_t _size = 0;
-
-	BytesView(Bytes const &bytes)
-	: _data(bytes.data())
-	, _size(bytes.size())
-	{}
-
-	BytesView(std::string_view str)
-	: _data((uint8_t const *)str.data())
-	, _size(str.size())
-	{}
-
-	BytesView(uint8_t const *bytes, size_t count)
-	: _data(bytes)
-	, _size(count)
-	{
-	}
-
-	BytesView(Bytes const &bytes, size_t pos, size_t count)
-	: _data(bytes.data() + (std::ptrdiff_t)pos)
-	, _size(count)
-	{
-	}
-
-	BytesView(Bytes::const_iterator begin, Bytes::const_iterator end)
-	: _data(begin.base())
-	, _size(end - begin)
-	{
-	}
-
-	uint8_t const &operator[](size_t index) const
-	{
-		return _data[index];
-	}
-
-	uint8_t const *data() const
-	{
-		return _data;
-	}
-
-	size_t size() const
-	{
-		return _size;
-	}
-
-	bool empty() const
-	{
-		return !_size;
-	}
-
-	BytesView subview(size_t pos, size_t size = size_t(-1))
-	{
-		assert(_size >= size + pos);
-		return BytesView(_data + pos, std::min(_size - pos, size));
-	}
-};
 
 template <typename T>
 bool serialize(Bytes &out, T const &v);
