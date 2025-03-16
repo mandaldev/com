@@ -87,5 +87,15 @@ struct BytesView
 	uint8_t const *end() { return _data + _size; }
 };
 
+static inline std::string bytes_to_str(BytesView bytes)
+{
+	return std::string((char const *)bytes.data(), bytes.size());
+}
+
+static inline Bytes str_to_bytes(std::string_view str)
+{
+	return Bytes((uint8_t const *)str.data(), (uint8_t const *)str.data() + str.size());
+}
+
 }
 #endif
