@@ -79,7 +79,7 @@ struct BytesView
 
 	BytesView subview(size_t pos, size_t size = size_t(-1))
 	{
-		assert(_size >= size + pos);
+		assert(_size >= pos);
 		return BytesView(_data + pos, std::min(_size - pos, size));
 	}
 
@@ -95,6 +95,13 @@ static inline std::string bytes_to_str(BytesView bytes)
 static inline Bytes str_to_bytes(std::string_view str)
 {
 	return Bytes((uint8_t const *)str.data(), (uint8_t const *)str.data() + str.size());
+}
+
+static inline Bytes operator+(BytesView l, BytesView r)
+{
+	Bytes bytes(l.begin(), l.end());
+	bytes.insert(bytes.end(), r.begin(), r.end());
+	return bytes;
 }
 
 }
