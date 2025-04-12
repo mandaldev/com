@@ -19,6 +19,7 @@
         "src/Date.cpp"
         "src/file.cpp"
         "src/Mab/serialize.cpp"
+        "src/ThreadPool.cpp"
       ]
 
       install [
@@ -40,6 +41,8 @@
             "src/log.hpp"
 
             "src/BytesView.hpp"
+
+            "src/ThreadPool.hpp"
           ]
         }
         {
