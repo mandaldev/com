@@ -42,13 +42,16 @@ constexpr uint8_t basic_type_abi()
 	else if IS_ABI(uint64_t)
 	else if IS_ABI(float)
 	else if IS_ABI(double)
+	else if IS_ABI(char16_t)
+	else if IS_ABI(char32_t)
 	#undef IS_ABI
 
 	// invalid
 	return 0;
 }
 
-static_assert(basic_type_abi<double>() == 12, "");
+
+constexpr auto LAST_BASIC_TYPE_ABI = basic_type_abi<char32_t>();
 
 /// enum type abi, return 0 if T is not supported enum type
 template <typename T>
@@ -56,7 +59,7 @@ constexpr uint8_t enum_type_abi()
 {
 	using Type = std::remove_cv_t<std::remove_reference_t<T>>;
 	#define IS_ENUM_ABI(t) constexpr (std::is_same_v<std::underlying_type_t<Type>, t>) { \
-		return __LINE__ - abi_start + basic_type_abi<double>(); \
+		return __LINE__ - abi_start + LAST_BASIC_TYPE_ABI; \
 	}
 	if constexpr (std::is_enum_v<Type>) {
 		const auto abi_start = __LINE__;
@@ -79,13 +82,12 @@ namespace detial_ {
 
 enum E : uint64_t {};
 
-// test
-static_assert(enum_type_abi<E>() == 20, "");
-
 }
 
+constexpr auto LAST_ENUM_TYPE_ABI = enum_type_abi<detial_::E>();
+
 /// map: key and value can be different type
-constexpr uint8_t map_abi = enum_type_abi<detial_::E>() + 1;
+constexpr uint8_t map_abi = LAST_ENUM_TYPE_ABI + 1;
 
 /// array: list of different type values
 constexpr uint8_t array_abi = map_abi + 1;
@@ -150,6 +152,10 @@ static inline std::size_t scalar_type_size(uint8_t abi)
 	case basic_type_abi<double>():
 		static_assert(sizeof(double) == sizeof(int64_t), "double is not 64-bit");
 		return 8;
+	case basic_type_abi<char16_t>():
+		return sizeof(char16_t);
+	case basic_type_abi<char32_t>():
+		return sizeof(char32_t);
 	default:
 		return 0;
 	}

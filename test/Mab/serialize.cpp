@@ -82,6 +82,7 @@ TEST(mab_serialize, "Com Mab serializing test")
 		uint64_t u64 = 0xffff;
 		std::vector<short> i16s = {1, -2, 0};
 		std::optional<float> opt = 0.375f;
+		std::u32string ustr = U"中文";
 	};
 	{
 		A a, b;
@@ -89,11 +90,12 @@ TEST(mab_serialize, "Com Mab serializing test")
 		b.i32 = 0;
 		b.u64 = 0;
 		b.i16s = {};
+		b.ustr = U"";
 		Bytes bytes;
 		size_t pos = 0;
 		assert(
-			serialize_kvs(bytes, COM_KV(a, e1), COM_KV(a, i32), COM_KV(a, u64), COM_KV(a, i16s), COM_KV(a, opt))
-			&& deserialize_kvs(bytes, pos, COM_KV(b, e1), COM_KV(b, i32), COM_KV(b, u64), COM_KV(b, i16s), COM_KV(b, opt))
+			serialize_kvs(bytes, COM_KV(a, e1), COM_KV(a, i32), COM_KV(a, u64), COM_KV(a, i16s), COM_KV(a, opt), COM_KV(a, ustr))
+			&& deserialize_kvs(bytes, pos, COM_KV(b, e1), COM_KV(b, i32), COM_KV(b, u64), COM_KV(b, i16s), COM_KV(b, opt), COM_KV(b, ustr))
 			&& a.e1 == b.e1
 			&& a.i32 == b.i32
 			&& a.u64 == b.u64
