@@ -31,6 +31,18 @@ static inline void make(std::shared_ptr<T> &sp, Args&&... args)
 	sp = std::make_shared<T>(std::forward<Args>(args)...);
 }
 
+template <typename T>
+static inline void make(std::unique_ptr<T> &sp)
+{
+	sp = std::make_unique<T>();
+}
+
+template <typename T, typename... Args>
+static inline void make(std::unique_ptr<T> &sp, Args&&... args)
+{
+	sp = std::make_unique<T>(std::forward<Args>(args)...);
+}
+
 /// as `std::enable_shared_from_this`, and add `bind_weak` api
 /// to provide safer callbacks.
 /// 一般来说，捕获共享指针是个糟糕的做法——可能引起循环引用，导致内存泄漏。
@@ -46,7 +58,7 @@ public:
 	auto bind_weak(Fn &&fn)
 	{
 		auto weak = this->weak_from_this();
-		return [weak, fn](auto&&... args)
+		return [weak, fn = std::move(fn)](auto&&... args)
 		{
 			auto shared = weak.lock();
 			if (!shared) {
