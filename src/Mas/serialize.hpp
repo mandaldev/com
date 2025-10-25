@@ -274,6 +274,7 @@ bool deserialize(Mas::String const &str, T &v)
 			return false;
 		}
 		v = str[0];
+		return true;
 	} else if constexpr (std::is_same_v<T, char32_t>) {
 		auto us = utf8_decode(str);
 		if (!us) {
