@@ -43,6 +43,8 @@
             "src/BytesView.hpp"
 
             "src/ThreadPool.hpp"
+
+            "src/math.hpp"
           ]
         }
         {
