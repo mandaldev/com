@@ -48,9 +48,17 @@ int exec(std::string const &cmd, std::string const &tmpname, std::string &stdout
 	cmdline = "bash -c '" + cmdline + "'";
 	auto ret = std::system(cmdline.c_str());
 	if (ret) {
+		// failed
+		try {
+			stderr_content = load_file(err_name).value();
+		} catch (std::exception const &e) {
+			stderr_content = "Failed to read output: ";
+			stderr_content += e.what();
+			ret = 1;
+		}
+	} else {
 		try {
 			stdout_content = load_file(out_name).value();
-			stderr_content = load_file(err_name).value();
 		} catch (std::exception const &e) {
 			stderr_content = "Failed to read output: ";
 			stderr_content += e.what();
