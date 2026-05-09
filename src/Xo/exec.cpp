@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "exec.hpp"
+#include "../file.hpp"
 #include <cassert>
 #include <filesystem>
-#include <fstream>
-#include <iterator>
 using namespace std::literals;
 
 static inline std::string get_tmpnam(std::string const &tmpname)
@@ -50,10 +49,8 @@ int exec(std::string const &cmd, std::string const &tmpname, std::string &stdout
 	auto ret = std::system(cmdline.c_str());
 	if (ret) {
 		try {
-			std::ifstream out{ out_name };
-			std::ifstream err{ err_name };
-			stdout_content = { std::istream_iterator<char>(out), std::istream_iterator<char>() };
-			stderr_content = { std::istream_iterator<char>(err), std::istream_iterator<char>() };
+			stdout_content = load_file(out_name).value();
+			stderr_content = load_file(err_name).value();
 		} catch (std::exception const &e) {
 			stderr_content = "Failed to read output: ";
 			stderr_content += e.what();
