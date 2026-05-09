@@ -34,8 +34,11 @@ std::optional<std::string> load_file(std::filesystem::path const &p)
 {
 	std::error_code ec {};
 	auto size = std::filesystem::file_size(p, ec);
-	if (ec || size == 0) {
+	if (ec) {
 		return {};
+	}
+	if (size == 0) {
+		return std::string();
 	}
 	auto buf = std::string(size, 0);
 	auto ifs = std::ifstream(p);
