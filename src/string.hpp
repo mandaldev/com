@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_STRING_HPP_
 #define COM_SRC_STRING_HPP_
-#include "Range.hpp"
 #include <algorithm>
 #include <cctype>
 #include <string>
@@ -101,8 +100,31 @@ static inline std::u32string_view trim(std::u32string_view const &str)
 
 /// join two string with delimter
 /// if one string is empty then delimter will not be inserted
-template <typename Delimter, typename Item>
-inline Item join(Delimter const &delimter, Item const &lhs, Item const &rhs)
+template <typename Delimter, typename Char>
+inline std::basic_string<Char> join(
+	Delimter const &delimter,
+	std::basic_string_view<Char> lhs,
+	std::basic_string_view<Char> rhs
+)
+{
+	if (lhs.empty()) {
+		return std::basic_string<Char>(rhs.begin(), rhs.end());
+	}
+	if (rhs.empty()) {
+		return std::basic_string<Char>(lhs.begin(), lhs.end());
+	}
+	auto ret = std::basic_string<Char>(lhs.begin(), lhs.end());
+	ret += delimter;
+	ret += rhs;
+	return ret;
+}
+
+template <typename Delimter, typename Char>
+inline std::basic_string<Char> join(
+	Delimter const &delimter,
+	std::basic_string<Char> const &lhs,
+	std::basic_string<Char> const &rhs
+)
 {
 	if (lhs.empty()) {
 		return rhs;
