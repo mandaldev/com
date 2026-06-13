@@ -15,10 +15,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_STRING_HPP_
 #define COM_SRC_STRING_HPP_
+#include "meta.hpp"
 #include <algorithm>
 #include <cctype>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 namespace Com {
@@ -99,40 +101,29 @@ static inline std::u32string_view trim(std::u32string_view const &str)
 }
 
 /// join two string with delimter
-/// if one string is empty then delimter will not be inserted
-template <typename Delimter, typename Char>
-inline std::basic_string<Char> join(
-	Delimter const &delimter,
-	std::basic_string_view<Char> lhs,
-	std::basic_string_view<Char> rhs
-)
+/// if one string is empty then delimter will not be inserted.
+/// lhs and rhs must be one of: string, string_view, Char*,
+/// delimiter must be one of: string, string_view, Char, Char*.
+/// Char is any character type>
+template <typename Delimter, typename L, typename R>
+auto join(Delimter const &delimter, L &&lhs, R &&rhs)
 {
+	using Char = std::remove_cv_t<std::remove_reference_t<decltype(lhs[0])>>;
+	std::basic_string<Char> ret;
 	if (lhs.empty()) {
-		return std::basic_string<Char>(rhs.begin(), rhs.end());
+		ret = rhs;
+	} else if (rhs.empty()) {
+		ret = lhs;
+	} else {
+		ret.insert(ret.end(), std::begin(lhs), std::end(lhs));
+		if constexpr (IsTemplate<Delimter, std::basic_string_view>::value) {
+			ret.insert(ret.end(), std::begin(delimter), std::end(delimter));
+		} else {
+			ret = ret + delimter;
+		}
+		ret.insert(ret.end(), std::begin(rhs), std::end(rhs));
 	}
-	if (rhs.empty()) {
-		return std::basic_string<Char>(lhs.begin(), lhs.end());
-	}
-	auto ret = std::basic_string<Char>(lhs.begin(), lhs.end());
-	ret += delimter;
-	ret += rhs;
 	return ret;
-}
-
-template <typename Delimter, typename Char>
-inline std::basic_string<Char> join(
-	Delimter const &delimter,
-	std::basic_string<Char> const &lhs,
-	std::basic_string<Char> const &rhs
-)
-{
-	if (lhs.empty()) {
-		return rhs;
-	}
-	if (rhs.empty()) {
-		return lhs;
-	}
-	return lhs + delimter + rhs;
 }
 
 /// concat strings with `delimter`

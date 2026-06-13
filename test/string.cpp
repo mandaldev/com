@@ -14,12 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "../src/unit.hpp"
+#include <string_view>
 #include "../src/string.hpp"
 
 TEST(string, "string utils test")
 {
 	std::string a = "hello", b = "world";
 	assert(Com::join(' ', a, b) == "hello world");
+	assert(Com::join(" ", a, b) == "hello world");
+	assert(Com::join(std::string_view(" "), std::string("hello"), std::string_view("world")) == "hello world");
 
 	std::vector<std::string> strs = {"a", "b", "c"};
 	assert(Com::join(' ', strs) == "a b c");
