@@ -24,7 +24,6 @@ bool mkdirs(std::filesystem::path const &dir)
 	std::error_code ec{};
 	std::filesystem::create_directories(dir, ec);
 	if (ec) {
-		std::cerr << "Error: failed to create directory " << dir << ", error: " << ec << "\n";
 		return false;
 	}
 	return true;
@@ -52,7 +51,6 @@ std::optional<Com::Mas::Value> load_mas_file(std::filesystem::path const &path)
 	if (buf) {
 		return Com::Mas::decode(buf.value());
 	} else {
-		std::cerr << "Error: read " << path << " failed\n";
 		return {};
 	}
 }
