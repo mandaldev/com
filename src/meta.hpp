@@ -18,6 +18,9 @@
 #include <iterator>
 #include <map>
 #include <set>
+#include <deque>
+#include <forward_list>
+#include <list>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
@@ -221,5 +224,61 @@ std::map<std::string_view, T> const &name_to_enum()
 	};
 	return map;
 }
+
+template <typename T>
+struct IsArray
+: std::false_type
+{};
+
+template <typename T, size_t N>
+struct IsArray<std::array<T, N>>
+: std::true_type
+{};
+
+template <typename T, typename E>
+struct IsArrayOf
+: std::false_type
+{};
+
+template <typename T, size_t N>
+struct IsArrayOf<std::array<T, N>, T>
+: std::true_type
+{};
+
+/// 是否是标准库的序列类型
+template <typename T, typename = void>
+struct IsSequence
+: std::false_type
+{};
+
+/// 是否是标准库的序列类型
+template <typename T>
+struct IsSequence<T,
+	std::enable_if_t<IsArray<T>::value
+	|| Com::IsTemplate<T, std::vector>::value
+	|| Com::IsTemplate<T, std::list>::value
+	|| Com::IsTemplate<T, std::deque>::value
+	|| Com::IsTemplate<T, std::forward_list>::value,
+	void>>
+: std::true_type
+{};
+
+template <typename T, typename E, typename = void>
+struct IsSequenceOf
+: std::false_type
+{};
+
+/// 是否是标准库的序列类型
+template <typename T, typename E>
+struct IsSequenceOf<T, E,
+	std::enable_if_t<IsArrayOf<T, E>::value
+	|| Com::IsTemplateWith<T, std::vector, E>::value
+	|| Com::IsTemplateWith<T, std::list, E>::value
+	|| Com::IsTemplateWith<T, std::deque, E>::value
+	|| Com::IsTemplateWith<T, std::forward_list, E>::value,
+	void>>
+: std::true_type
+{};
+
 }
 #endif
