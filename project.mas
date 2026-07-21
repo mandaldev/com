@@ -45,6 +45,7 @@
             "src/ThreadPool.hpp"
 
             "src/math.hpp"
+            "src/varith.hpp"
           ]
         }
         {
