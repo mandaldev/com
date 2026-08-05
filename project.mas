@@ -22,6 +22,7 @@
         "src/ThreadPool.cpp"
 
         "src/Proc/Mounts.cpp"
+        "src/Proc/load.cpp"
       ]
 
       install [
