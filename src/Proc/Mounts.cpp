@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Mounts.hpp"
-#include "../file.hpp"
 #include "../string.hpp"
+#include "load.hpp"
 #include <filesystem>
 #include <string_view>
 #include <system_error>
@@ -26,25 +26,20 @@ bool Mounts::load()
 {
 	_data.clear();
 	_map.clear();
-	auto opt = load_file("/proc/mounts");
-	if (!opt) {
-		return false;
-	}
-	auto lines = split(std::string_view(opt.value()), "\n");
-	for (auto line : lines) {
-		auto fields = split(line, " ");
+	auto raw_data = load_values_style("/proc/mounts", " ");
+	for (auto &fields : raw_data) {
 		if (fields.size() < 6) {
 			continue;
 		}
 		auto &data = _data.emplace_back();
-		data.device = fields[0];
-		data.location = fields[1];
-		data.fs_type = fields[2];
-		for (auto opt : split(fields[3], ",")) {
+		data.device = std::move(fields[0]);
+		data.location = std::move(fields[1]);
+		data.fs_type = std::move(fields[2]);
+		for (auto opt : split(std::string_view(fields[3]), ",")) {
 			data.opts.push_back(std::string(opt));
 		}
-		data.freq = fields[4];
-		data.passno = fields[5];
+		data.freq = std::move(fields[4]);
+		data.passno = std::move(fields[5]);
 		_map[data.location] = _data.size() - 1;
 	}
 	return true;
