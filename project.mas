@@ -20,6 +20,8 @@
         "src/file.cpp"
         "src/Mab/serialize.cpp"
         "src/ThreadPool.cpp"
+
+        "src/Proc/Mounts.cpp"
       ]
 
       install [
@@ -76,6 +78,12 @@
             "src/Mab/serialize.hpp"
           ]
         }
+        {
+          dir "Com/Proc"
+          headers [
+            "src/Proc/Mounts.hpp"
+          ]
+        }
       ]
     }
 
@@ -91,6 +99,8 @@
         "test/Codecs/utf8.cpp"
         "test/Mas/serialize.cpp"
         "test/Mab/serialize.cpp"
+
+        "test/Proc/mounts.cpp"
       ]
 
       dep [
