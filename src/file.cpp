@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "file.hpp"
+#include <exception>
 #include <fstream>
 #include <iostream>
 
@@ -30,18 +31,23 @@ bool mkdirs(std::filesystem::path const &dir)
 }
 
 std::optional<std::string> load_file(std::filesystem::path const &p)
-{
-	std::error_code ec {};
-	auto size = std::filesystem::file_size(p, ec);
-	if (ec) {
-		return {};
-	}
-	if (size == 0) {
-		return std::string();
-	}
-	auto buf = std::string(size, 0);
+try {
+	long const buf_size = 8 << 10;
+	auto buf = std::string(buf_size, 0);
+
+	std::string ret;
 	auto ifs = std::ifstream(p);
-	return ifs.read(buf.data(), (std::streamsize)buf.size()) ? buf : std::string();
+	while (ifs) {
+		ifs.read(buf.data(), buf_size);
+		auto n = ifs.gcount();
+		if (n > 0) {
+			ret.insert(ret.end(), buf.begin(), buf.begin() + n);
+		}
+	}
+
+	return ret;
+} catch (std::exception &e) {
+	return {};
 }
 
 // load mas file
