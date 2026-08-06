@@ -42,7 +42,7 @@ load_header_value_style(std::filesystem::path const &path, std::string const &se
 		auto &data = ret.emplace_back();
 		data.first = trim(fields[0]);
 		if (fields.size() > 2) {
-			data.second = trim(join(":", make_range(fields.begin() + 1, fields.end())));
+			data.second = trim(join(sep, make_range(fields.begin() + 1, fields.end())));
 		} else {
 			data.second = trim(fields[1]);
 		}
