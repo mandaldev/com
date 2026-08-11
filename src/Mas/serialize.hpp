@@ -114,11 +114,11 @@ extern bool Deserialize_Of_This_Type_Not_Implemented;
 extern Mas::Value Serialize_Of_This_Type_Not_Implemented;
 
 /// test `T` can be inserted with one item
-template <typename T, typename... Args>
-Mas::Value number_to_mas(T v, Args&&... args)
+template <typename T>
+Mas::Value number_to_mas(T v)
 {
-	std::array<char, 64> str;
-	auto [ptr, ec] = std::to_chars(str.data(), str.data() + str.size(), v, args...);
+	std::array<char, 128> str;
+	auto [ptr, ec] = std::to_chars(str.data(), str.data() + str.size(), v);
 	if (ec == std::errc()) {
         	return Mas::String(str.data(), ptr);
 	} else {
@@ -212,10 +212,8 @@ Mas::Value serialize(V const &v)
 		return std::string(1, v);
 	} else if constexpr (std::is_same_v<T, char32_t>) {
 		return utf8_encode(std::u32string(1, v)).value_or("\0");
-	} else if constexpr (std::is_integral_v<T>) {
-		return detial_::number_to_mas(v, 10);
-	} else if constexpr (std::is_floating_point_v<T>) {
-		return detial_::number_to_mas(v, std::chars_format::scientific, 32);
+	} else if constexpr (std::is_arithmetic_v<T>) {
+		return detial_::number_to_mas(v);
 	} else if constexpr (std::is_same_v<T, std::string>) {
 		return v;
 	} else if constexpr (std::is_same_v<T, std::u32string>) {
