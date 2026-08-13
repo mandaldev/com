@@ -90,4 +90,13 @@ std::map<std::string, std::vector<long>> Stat::get_others() const
 	return _others;
 }
 
+std::time_t Stat::boot_time() const
+{
+	auto it = _others.find("btime");
+	if (it == _others.end() || it->second.empty()) {
+		return {};
+	}
+	return std::time_t(it->second[0]);
+}
+
 }

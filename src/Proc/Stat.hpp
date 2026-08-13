@@ -44,6 +44,8 @@ public:
 
 	std::map<std::string, std::vector<long>> get_others() const;
 
+	std::time_t boot_time() const;
+
 private:
 	CpuTime _cpu_total;
 	std::vector<CpuTime> _cpu;

@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "../../src/unit.hpp"
 #include "../../src/Proc/Stat.hpp"
+#include <ctime>
 #include <iostream>
 #include <unistd.h>
 
@@ -31,5 +32,7 @@ TEST(stat, "Proc Stat test")
 		old = stat.get_cpu_total_time();
 		std::cout << usage << ", " << system << std::endl;
 	// }
+	auto btime = stat.boot_time();
+	std::cout << "boot time: " << std::ctime(&btime) << std::endl;
 	return;
 }
