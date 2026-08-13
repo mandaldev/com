@@ -24,6 +24,7 @@
         "src/Proc/load.cpp"
         "src/Proc/Mounts.cpp"
         "src/Proc/Stat.cpp"
+        "src/Proc/CpuInfo.cpp"
       ]
 
       install [
@@ -85,6 +86,7 @@
           headers [
             "src/Proc/Mounts.hpp"
             "src/Proc/Stat.hpp"
+            "src/Proc/CpuInfo.hpp"
           ]
         }
       ]
@@ -105,6 +107,7 @@
 
         "test/Proc/mounts.cpp"
         "test/Proc/stat.cpp"
+        "test/Proc/cpuinfo.cpp"
       ]
 
       dep [
