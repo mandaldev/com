@@ -21,6 +21,7 @@ namespace Com::Proc {
 
 bool CpuInfo::load()
 {
+	_physicals.clear();
 	auto raw_data = load_header_value_style("/proc/cpuinfo", ":");
 	if (raw_data.empty()) {
 		return false;

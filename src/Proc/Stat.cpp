@@ -39,6 +39,9 @@ float Stat::CpuTime::usage_percent(CpuTime const &old, float *system) const
 
 bool Stat::load()
 {
+	_cpu.clear();
+	_cpu_total = {};
+	_others.clear();
 	auto raw_data = load_header_value_style("/proc/stat", " ");
 	if (raw_data.empty()) {
 		return false;
