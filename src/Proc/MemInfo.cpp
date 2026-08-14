@@ -99,7 +99,7 @@ size_t MemInfo::swap_free() const
 	return _swap_free;
 }
 
-std::map<std::string, size_t> MemInfo::others() const
+std::map<std::string, size_t> const &MemInfo::others() const
 {
 	return _others;
 }

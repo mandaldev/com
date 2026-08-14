@@ -38,7 +38,7 @@ public:
 
 	size_t swap_free() const;
 
-	std::map<std::string, size_t> others() const;
+	std::map<std::string, size_t> const &others() const;
 
 private:
 	size_t _total = 0;
