@@ -25,6 +25,7 @@
         "src/Proc/Mounts.cpp"
         "src/Proc/Stat.cpp"
         "src/Proc/CpuInfo.cpp"
+        "src/Proc/MemInfo.cpp"
       ]
 
       install [
@@ -87,6 +88,7 @@
             "src/Proc/Mounts.hpp"
             "src/Proc/Stat.hpp"
             "src/Proc/CpuInfo.hpp"
+            "src/Proc/MemInfo.hpp"
           ]
         }
       ]
@@ -108,6 +110,7 @@
         "test/Proc/mounts.cpp"
         "test/Proc/stat.cpp"
         "test/Proc/cpuinfo.cpp"
+        "test/Proc/meminfo.cpp"
       ]
 
       dep [
