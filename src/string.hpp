@@ -43,59 +43,85 @@ static inline std::string &tolower(std::string &str)
 
 /// remove all `trim_chars` at front
 template <typename... Args>
-static inline std::basic_string_view<Args...> trim_front(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
+static inline
+std::basic_string_view<Args...>
+trim_front(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
-	auto pos = std::find_if_not(str.begin(), str.end(), [&trim_chars](auto c) { return trim_chars.find(c) < trim_chars.size(); });
+	auto pos = std::find_if_not(
+		str.begin(),
+		str.end(),
+		[&trim_chars](auto c)
+		{
+			return trim_chars.find(c) < trim_chars.size();
+		}
+	);
 	return std::basic_string_view<Args...>(pos, str.cend() - pos);
 }
 
 /// remove all `trim_chars` at back
 template <typename... Args>
-static inline std::basic_string_view<Args...> trim_back(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
+static inline
+std::basic_string_view<Args...>
+trim_back(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
-	auto pos = std::find_if_not(str.rbegin(), str.rend(), [&trim_chars](auto c) { return trim_chars.find(c) < trim_chars.size(); }) - str.rbegin();
+	auto pos = std::find_if_not(
+		str.rbegin(),
+		str.rend(),
+		[&trim_chars](auto c)
+		{
+			return trim_chars.find(c) < trim_chars.size();
+		}
+	) - str.rbegin();
 	return std::basic_string_view(str.begin(), str.end() - pos - str.begin());
 }
 
 /// remove all `trim_chars` at front and back
 template <typename... Args>
-static inline std::basic_string_view<Args...> trim(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
+static inline
+std::basic_string_view<Args...>
+trim(std::basic_string_view<Args...> const &str, std::basic_string_view<Args...> const &trim_chars)
 {
 	return trim_front(trim_back(str, trim_chars), trim_chars);
 }
 
 /// remove all white spaces (' ', '\n', '\t', '\v') at front
-static inline std::string_view trim_front(std::string_view const &str)
+static inline
+std::string_view trim_front(std::string_view const &str)
 {
 	return trim_front(str, std::string_view(" \n\v\t"));
 }
 
 /// remove all white spaces (' ', '\n', '\t', '\v') at back
-static inline std::string_view trim_back(std::string_view const &str)
+static inline
+std::string_view trim_back(std::string_view const &str)
 {
 	return trim_back(str, std::string_view(" \n\v\t"));
 }
 
 /// remove all white spaces (' ', '\n', '\t', '\v') at front and back
-static inline std::string_view trim(std::string_view const &str)
+static inline
+std::string_view trim(std::string_view const &str)
 {
 	return trim(str, std::string_view(" \n\v\t"));
 }
 
 /// remove all white spaces (' ', '\n', '\t', '\v') at front
-static inline std::u32string_view trim_front(std::u32string_view const &str)
+static inline
+std::u32string_view trim_front(std::u32string_view const &str)
 {
 	return trim_front(str, std::u32string_view(U" \n\v\t"));
 }
 
 /// remove all white spaces (' ', '\n', '\t', '\v') at back
-static inline std::u32string_view trim_back(std::u32string_view const &str)
+static inline
+std::u32string_view trim_back(std::u32string_view const &str)
 {
 	return trim_back(str, std::u32string_view(U" \n\v\t"));
 }
 
 /// remove all white spaces (' ', '\n', '\t', '\v') at front and back
-static inline std::u32string_view trim(std::u32string_view const &str)
+static inline
+std::u32string_view trim(std::u32string_view const &str)
 {
 	return trim(str, std::u32string_view(U" \n\v\t"));
 }
@@ -129,7 +155,7 @@ auto join(Delimter const &delimter, L &&lhs, R &&rhs)
 /// concat strings with `delimter`
 /// if one string is empty then delimter will not be inserted
 template <typename Delimter, typename Range>
-inline auto join(Delimter const &delimter, Range const &range)
+auto join(Delimter const &delimter, Range const &range)
 {
 	auto ret = decltype(join(delimter, *range.begin(), *range.begin()))();
 	for (auto &str : range) {
@@ -140,7 +166,7 @@ inline auto join(Delimter const &delimter, Range const &range)
 
 /// split `str` at `each` one of `delims`
 template <typename Delims, typename... Args>
-inline auto split(std::basic_string_view<Args...> const &str, Delims &&delims, bool each = false)
+auto split(std::basic_string_view<Args...> const &str, Delims &&delims, bool each = false)
 {
 	std::vector<std::basic_string_view<Args...>> strs;
 	size_t e = 0;
@@ -157,6 +183,12 @@ inline auto split(std::basic_string_view<Args...> const &str, Delims &&delims, b
 		e = b + 1;
 	}
 	return strs;
+}
+
+template <typename Delims, typename... Args>
+auto split(std::basic_string<Args...> const &str, Delims &&delims, bool each = false)
+{
+	return split(std::basic_string_view<typename std::basic_string<Args...>::value_type>(str), delims, each);
 }
 
 }
