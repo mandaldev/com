@@ -18,7 +18,7 @@
 #include <set>
 #include <string>
 
-namespace Com::proc {
+namespace Com::Proc {
 
 /// 当前内核支持的文件系统
 std::set<std::string> filesystems(std::set<std::string> *nodev_filesystems = nullptr);

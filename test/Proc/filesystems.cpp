@@ -21,6 +21,6 @@
 TEST(filesystems, "Proc filesystems test")
 {
 	std::set<std::string> nodev;
-	auto fss = Com::proc::filesystems(&nodev);
+	auto fss = Com::Proc::filesystems(&nodev);
 	assert(fss.size() + nodev.size());
 }

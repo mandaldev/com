@@ -16,7 +16,7 @@
 #include "filesystems.hpp"
 #include "load.hpp"
 
-namespace Com::proc {
+namespace Com::Proc {
 
 std::set<std::string> filesystems(std::set<std::string> *nodev_filesystems)
 {
