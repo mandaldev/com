@@ -15,8 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_DATE_HPP_
 #define COM_SRC_DATE_HPP_
-#include <ctime>
-#include <locale>
 
 namespace Com::Date {
 
