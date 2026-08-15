@@ -87,33 +87,6 @@ String &Value::as_string(String const &src)
 	return std::get<String>(_var);
 }
 
-Map Value::map_or(Map const &what) const
-{
-	if (std::holds_alternative<Map>(_var)) {
-		return std::get<Map>(_var);
-	} else {
-		return what;
-	}
-}
-
-Array Value::array_or(Array const &what) const
-{
-	if (std::holds_alternative<Array>(_var)) {
-		return std::get<Array>(_var);
-	} else {
-		return what;
-	}
-}
-
-String Value::string_or(String const &what) const
-{
-	if (std::holds_alternative<String>(_var)) {
-		return std::get<String>(_var);
-	} else {
-		return what;
-	}
-}
-
 Map const& Value::map() const
 {
 	return std::get<Map>(_var);
@@ -154,7 +127,7 @@ public:
 			if (_opt.pretty) {
 				_output.push_back(' ');
 			}
-			v.visit_by(*this); // value
+			v.visit(*this); // value
 		}
 
 		_indent--;
@@ -171,7 +144,7 @@ public:
 
 		for (auto const &v : a) {
 			indent();
-			v.visit_by(*this); // value
+			v.visit(*this); // value
 		}
 
 		_indent--;
@@ -236,7 +209,7 @@ private:
 std::string encode(Value const &value, EncodeOption const &option)
 {
 	auto encoder = Encoder(option);
-	value.visit_by(encoder);
+	value.visit(encoder);
 	return encoder.get();
 }
 

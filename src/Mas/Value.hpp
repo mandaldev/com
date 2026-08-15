@@ -17,7 +17,6 @@
 #define MAS_SRC_VALUE_HPP
 #include <map>
 #include <optional>
-#include <sstream>
 #include <string>
 #include <variant>
 #include <vector>
@@ -123,15 +122,6 @@ public:
 	/// returns contained string value, otherwise drop old value and assign `src` to it
 	String &as_string(String const &src = {});
 
-	/// returns contained map value or `what`
-	Map map_or(Map const &what) const;
-
-	/// returns contained array value or `what`
-	Array array_or(Array const &what) const;
-
-	/// returns contained string value or `what`
-	String string_or(String const &what) const;
-
 	/// returns contained map value, otherwise raise a std::bad_variant_access except
 	Map const &map() const;
 
@@ -142,7 +132,7 @@ public:
 	String const &string() const;
 
 	template <typename Visitor>
-	auto visit_by(Visitor &visitor) const
+	auto visit(Visitor &visitor) const
 	{
 		return std::visit(visitor, _var);
 	}
