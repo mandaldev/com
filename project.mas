@@ -26,6 +26,7 @@
         "src/Proc/Stat.cpp"
         "src/Proc/CpuInfo.cpp"
         "src/Proc/MemInfo.cpp"
+        "src/Proc/DiskStats.cpp"
       ]
 
       install [
@@ -89,6 +90,7 @@
             "src/Proc/Stat.hpp"
             "src/Proc/CpuInfo.hpp"
             "src/Proc/MemInfo.hpp"
+            "src/Proc/DiskStats.hpp"
           ]
         }
       ]
@@ -111,6 +113,7 @@
         "test/Proc/stat.cpp"
         "test/Proc/cpuinfo.cpp"
         "test/Proc/meminfo.cpp"
+        "test/Proc/diskstats.cpp"
       ]
 
       dep [
