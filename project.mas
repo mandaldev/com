@@ -28,6 +28,7 @@
         "src/Proc/MemInfo.cpp"
         "src/Proc/DiskStats.cpp"
         "src/Proc/filesystems.cpp"
+        "src/Proc/devices.cpp"
       ]
 
       install [
@@ -93,6 +94,7 @@
             "src/Proc/MemInfo.hpp"
             "src/Proc/DiskStats.hpp"
             "src/Proc/filesystems.hpp"
+            "src/Proc/devices.hpp"
           ]
         }
       ]
@@ -117,6 +119,7 @@
         "test/Proc/meminfo.cpp"
         "test/Proc/diskstats.cpp"
         "test/Proc/filesystems.cpp"
+        "test/Proc/devices.cpp"
       ]
 
       dep [
