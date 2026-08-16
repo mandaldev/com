@@ -29,6 +29,7 @@
         "src/Proc/DiskStats.cpp"
         "src/Proc/filesystems.cpp"
         "src/Proc/devices.cpp"
+        "src/Proc/Net.cpp"
       ]
 
       install [
@@ -95,6 +96,7 @@
             "src/Proc/DiskStats.hpp"
             "src/Proc/filesystems.hpp"
             "src/Proc/devices.hpp"
+            "src/Proc/Net.hpp"
           ]
         }
       ]
@@ -120,6 +122,7 @@
         "test/Proc/diskstats.cpp"
         "test/Proc/filesystems.cpp"
         "test/Proc/devices.cpp"
+        "test/Proc/net.cpp"
       ]
 
       dep [
