@@ -128,6 +128,8 @@
       dep [
         "Com"
       ]
+
+      explicit_install "true"
     }
   }
 }
