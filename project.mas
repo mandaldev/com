@@ -30,6 +30,7 @@
         "src/Proc/filesystems.cpp"
         "src/Proc/devices.cpp"
         "src/Proc/Net.cpp"
+        "src/Proc/Process.cpp"
       ]
 
       install [
@@ -97,6 +98,7 @@
             "src/Proc/filesystems.hpp"
             "src/Proc/devices.hpp"
             "src/Proc/Net.hpp"
+            "src/Proc/Process.hpp"
           ]
         }
       ]
@@ -123,6 +125,7 @@
         "test/Proc/filesystems.cpp"
         "test/Proc/devices.cpp"
         "test/Proc/net.cpp"
+        "test/Proc/process.cpp"
       ]
 
       dep [
