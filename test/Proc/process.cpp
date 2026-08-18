@@ -25,5 +25,7 @@ TEST(process, "Proc Process test")
 	assert(statm.size);
 	auto page = Com::Proc::Process::page_size();
 	assert(page);
+	auto tree = Com::Proc::Process::tree();
+	assert(tree.children.size());
 	return;
 }

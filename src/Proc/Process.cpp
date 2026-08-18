@@ -15,8 +15,11 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "Process.hpp"
 #include "../file.hpp"
+#include "../string.hpp"
 #include <charconv>
+#include <filesystem>
 #include <sstream>
+#include <string>
 #include <unistd.h>
 
 namespace Com::Proc::Process {
@@ -137,6 +140,26 @@ Statm statm(int pid)
 unsigned long page_size()
 {
 	static unsigned long ret = sysconf(_SC_PAGESIZE);
+	return ret;
+}
+
+Tree tree()
+{
+	Tree ret;
+	for (auto const &de : std::filesystem::directory_iterator("/proc")) {
+		auto name = de.path().stem().string();
+		if (name.find_first_not_of("0123456789") == name.npos) {
+			auto s = stat(name);
+			auto sm = statm(name);
+			if (s.pid == 0) {
+				continue;
+			}
+			ret.stats[s.pid] = std::move(s);
+			ret.statms[s.pid] = std::move(sm);
+			ret.children[s.ppid].push_back(s.pid);
+		}
+	}
+
 	return ret;
 }
 

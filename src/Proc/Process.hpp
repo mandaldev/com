@@ -15,7 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_PROC_PROCESS_HPP
 #define COM_SRC_PROC_PROCESS_HPP
+#include <map>
 #include <string>
+#include <vector>
 
 namespace Com::Proc::Process {
 
@@ -253,6 +255,15 @@ Statm statm(std::string const &pid);
 Statm statm(int pid);
 
 unsigned long page_size();
+
+struct Tree {
+	std::map<int, Stat> stats;
+	std::map<int, Statm> statms;
+	/// <pid, children pid>
+	std::map<int, std::vector<int>> children;
+};
+
+Tree tree();
 
 }
 #endif
