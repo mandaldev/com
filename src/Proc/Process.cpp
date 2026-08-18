@@ -27,11 +27,25 @@ Stat stat(std::string const &pid)
 	if (!opt) {
 		return {};
 	}
+	auto const &line = opt.value();
+	auto items = Com::split(std::string_view(line), "(");
+	if (items.size() < 2) {
+		return {};
+	}
+	auto pid_str = items[0];
+	items = Com::split(items[1], ")");
+	if (items.size() < 2) {
+		return {};
+	}
+	auto comm_str = items[0];
 	Stat ret;
-	std::istringstream iss(opt.value());
+	{
+		std::istringstream iss(std::string{pid_str});
+		iss >> ret.pid;
+	}
+	ret.comm = comm_str;
+	std::istringstream iss(std::string{ items[1] });
 	iss
-	>> ret.pid
-	>> ret.comm
 	>> ret.state
 	>> ret.ppid
 	>> ret.pgrp
