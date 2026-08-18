@@ -20,7 +20,13 @@
 namespace Com::Proc::Process {
 
 struct Stat {
+	/// The process ID.
 	int pid = 0;
+	/// The filename of the executable, in parentheses.
+	/// Strings longer than TASK_COMM_LEN (16) characters
+	/// (including the terminating null byte) are silently
+	/// truncated.  This is visible whether or not the
+	/// executable is swapped out.
 	std::string comm;
 	/// - R: Running
 	/// - S: Sleeping in an interruptible wait
@@ -36,8 +42,11 @@ struct Stat {
 	/// - P: Parked (Linux 3.9 to 3.13 only)
 	/// - I: Idle (Linux 4.14 onward)
 	char state = 0;
+	/// The PID of the parent of this process.
 	int ppid = 0;
+	/// The process group ID of the process.
 	int pgrp = 0;
+	/// The session ID of the process.
 	int session = 0;
 	/// The controlling terminal of the process.  (The minor
 	/// device number is contained in the combination of
