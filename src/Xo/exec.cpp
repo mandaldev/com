@@ -15,8 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "exec.hpp"
 #include "../file.hpp"
+#include "../string.hpp"
 #include <cassert>
 #include <filesystem>
+#include <string>
+#include <string_view>
+#include <system_error>
+#include <unistd.h>
+#include <vector>
 using namespace std::literals;
 
 static inline std::string get_tmpnam(std::string const &tmpname)
@@ -87,6 +93,71 @@ std::filesystem::path exec_install_prefix()
 		return prefix;
 	}
 	return {};
+}
+
+std::map<std::string, std::string> build_env_map()
+{
+	std::map<std::string, std::string> ret;
+	for (auto p = environ; *p; p++) {
+		auto kv = Com::split(std::string_view(*p), "=");
+		if (kv.size() == 2) {
+			ret[std::string(kv[0])] = kv[1];
+		}
+	}
+	return ret;
+}
+
+std::error_code fork_and_exec(
+	std::filesystem::path const &program,
+	std::vector<std::string> args,
+	std::map<std::string, std::string> const &env,
+	int *child_pid
+)
+{
+	if (!program.has_filename()) {
+		return std::make_error_code(std::errc::invalid_argument);
+	}
+	auto pid = fork();
+	switch (pid) {
+	case -1: { // error
+		return std::make_error_code((std::errc)errno);
+	}
+	case 0: { // child
+		break;
+	}
+	default: { // parent
+		if (child_pid) {
+			*child_pid = pid;
+		}
+		return {};
+	}
+	}
+
+	auto p = program.string();
+
+	std::vector<char*> a;
+	a.reserve(args.size() + 1);
+	for (auto &v : args) {
+		v.push_back(0);
+		a.push_back(v.data());
+	}
+	a.push_back(nullptr);
+
+	if (env.empty()) {
+		execvp(p.c_str(), a.data());
+	} else {
+		std::vector<char*> ps;
+		ps.reserve(env.size() + 1);
+		std::vector<std::string> ss;
+		ss.reserve(env.size());
+		for (auto &[k, v] : env) {
+			ps.push_back(ss.emplace_back(k + "=" + v + '\0').data());
+		}
+		ps.push_back(nullptr);
+		execvpe(p.c_str(), a.data(), ps.data());
+	}
+
+	return std::make_error_code((std::errc)errno);
 }
 
 } // namespace XO

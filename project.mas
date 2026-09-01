@@ -116,6 +116,7 @@
         "test/Codecs/utf8.cpp"
         "test/Mas/serialize.cpp"
         "test/Mab/serialize.cpp"
+        "test/Xo/exec.cpp"
 
         "test/Proc/mounts.cpp"
         "test/Proc/stat.cpp"
