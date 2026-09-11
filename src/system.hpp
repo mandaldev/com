@@ -32,7 +32,7 @@ struct Passwd {
 };
 
 /// <uid, passwd entry>
-std::map<int, Passwd> get_passwd();
+std::map<unsigned, Passwd> get_passwd();
 
 bool get_file_owner(std::filesystem::path const &path, bool follow_link, unsigned &uid, unsigned &gid);
 

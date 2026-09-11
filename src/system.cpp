@@ -21,9 +21,9 @@
 
 namespace Com {
 
-std::map<int, Passwd> get_passwd()
+std::map<unsigned, Passwd> get_passwd()
 {
-	std::map<int, Passwd> ret;
+	std::map<unsigned, Passwd> ret;
 	auto data = Proc::load_values_style("/etc/passwd", ":");
 	for (auto const &items : data) {
 		if (items.size() != 7) {
