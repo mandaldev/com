@@ -45,8 +45,14 @@ std::map<unsigned, Passwd> get_passwd()
 bool get_file_owner(std::filesystem::path const &path, bool follow_link, unsigned &uid, unsigned &gid)
 {
 	struct stat s;
-	if (stat(path.c_str(), &s)) {
-		return false;
+	if (follow_link) {
+		if (stat(path.c_str(), &s)) {
+			return false;
+		}
+	} else {
+		if (lstat(path.c_str(), &s)) {
+			return false;
+		}
 	}
 	uid = s.st_uid;
 	gid = s.st_gid;
