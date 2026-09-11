@@ -20,6 +20,7 @@
         "src/file.cpp"
         "src/Mab/serialize.cpp"
         "src/ThreadPool.cpp"
+        "src/system.cpp"
 
         "src/Proc/load.cpp"
         "src/Proc/Mounts.cpp"
@@ -57,6 +58,8 @@
 
             "src/math.hpp"
             "src/varith.hpp"
+
+            "src/system.hpp"
           ]
         }
         {
@@ -127,6 +130,8 @@
         "test/Proc/devices.cpp"
         "test/Proc/net.cpp"
         "test/Proc/process.cpp"
+
+        "test/system.cpp"
       ]
 
       dep [
