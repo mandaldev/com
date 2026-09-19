@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_STRING_HPP_
 #define COM_SRC_STRING_HPP_
+#include "Codecs/utf8.hpp"
 #include "meta.hpp"
 #include <algorithm>
 #include <cctype>
@@ -24,6 +25,16 @@
 #include <vector>
 
 namespace Com {
+
+static inline std::string ustr(std::u32string_view str)
+{
+	return utf8_encode(str).value_or("");
+}
+
+static inline std::u32string ustr(std::string_view str)
+{
+	return utf8_decode(str).value_or(U"");
+}
 
 static inline std::string &toupper(std::string &str)
 {
