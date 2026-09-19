@@ -16,6 +16,7 @@
 #ifndef COM_SRC_FILE_HPP_
 #define COM_SRC_FILE_HPP_
 #include "Mas/Value.hpp"
+#include "Flags.hpp"
 #include <filesystem>
 #include <optional>
 
@@ -30,6 +31,35 @@ std::optional<Com::Mas::Value> load_mas_file(std::filesystem::path const &path);
 bool save_file(std::filesystem::path const &path, std::string_view buf);
 
 bool save_pretty_mas_file(std::filesystem::path const &path, Mas::Value const &mas);
+
+/// 根目录 （“/”）
+std::filesystem::path root_dir();
+
+/// 当前用户主目录（不使用全局缓存的，如果有更改运行时用户的可能，调次函数）
+std::filesystem::path home_dir_no_cache();
+
+/// 当前用户主目录
+std::filesystem::path home_dir();
+
+/// 文件名是否合法（仅检查字符）
+bool is_filename_valid(std::string const &name);
+
+enum class FilePerm : unsigned {
+	R = 0,
+	W,
+	X,
+};
+
+/// 当前用户所拥有的 `path` 所指文件的权限
+Flags<FilePerm> permissions_for_me(std::filesystem::path const &path);
+
+/// 检查 kid 是否位于目录 dir 下面（直接或间接）。
+/// 如果 top 不是空，则认为 kid 和 dir 都在 top 目录下面，则可以节省一些计算。
+bool is_lexically_kid_of(
+	std::filesystem::path const &dir,
+	std::filesystem::path const &top,
+	std::filesystem::path const &kid
+);
 
 }
 #endif
