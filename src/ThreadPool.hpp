@@ -36,7 +36,7 @@ public:
 	using Task = std::function<void()>;
 
 	/// 默认 1 个线程
-	ThreadPool(int threads);
+	ThreadPool(unsigned threads);
 
 	~ThreadPool();
 
@@ -52,9 +52,9 @@ public:
 private:
 	void worker();
 
-	int _max_threads = 1;
+	unsigned _max_threads = 1;
 	std::atomic_bool _runing{true};
-	std::atomic_int _busy_thrd_count{0};
+	std::atomic_uint _busy_thrd_count{0};
 	std::vector<std::thread> _thrds;
 
 	std::mutex _mtx;

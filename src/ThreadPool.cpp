@@ -21,7 +21,7 @@
 
 namespace Com {
 
-ThreadPool::ThreadPool(int threads)
+ThreadPool::ThreadPool(unsigned threads)
 {
 	_max_threads = std::max(_max_threads, threads);
 }
