@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "ThreadPool.hpp"
+#include "log.hpp"
 #include <cstdint>
+#include <exception>
 #include <mutex>
 
 namespace Com {
@@ -96,7 +98,11 @@ void ThreadPool::worker()
 		}
 		if (task) {
 			_busy_thrd_count += 1;
-			task();
+			try {
+				task();
+			} catch (std::exception &e) {
+				LOG_ERROR << "task throwed an exception: " << e.what();
+			}
 			_busy_thrd_count -= 1;
 		}
 	}
