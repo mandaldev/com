@@ -15,7 +15,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef COM_SRC_THREADPOOL_HPP
 #define COM_SRC_THREADPOOL_HPP
-#include "memory.hpp"
 #include "raii.hpp"
 #include <atomic>
 #include <condition_variable>
@@ -30,7 +29,6 @@ namespace Com {
 
 class ThreadPool
 : Com::Unique
-, Com::EnableBindWeak<ThreadPool>
 {
 public:
 	using Task = std::function<void()>;

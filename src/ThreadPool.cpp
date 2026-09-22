@@ -41,10 +41,10 @@ uint64_t ThreadPool::add_task(Task const &task)
 	}
 
 	if (_thrds.size() == 0 || (_busy_thrd_count == _thrds.size() && _thrds.size() < _max_threads)) {
-		_thrds.emplace_back(bind_weak([this]()
+		_thrds.emplace_back([this]()
 		{
 			worker();
-		}));
+		});
 	}
 
 	_cv.notify_one();
