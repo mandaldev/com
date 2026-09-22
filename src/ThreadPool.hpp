@@ -35,7 +35,8 @@ class ThreadPool
 public:
 	using Task = std::function<void()>;
 
-	ThreadPool(uint16_t threads);
+	/// 默认 1 个线程
+	ThreadPool(int threads);
 
 	~ThreadPool();
 
@@ -51,9 +52,10 @@ public:
 private:
 	void worker();
 
-	uint16_t _max_threads = 1;
+	int _max_threads = 1;
+	std::atomic_bool _runing{true};
+	std::atomic_int _busy_thrd_count{0};
 	std::vector<std::thread> _thrds;
-	std::atomic_bool _runing;
 
 	std::mutex _mtx;
 	std::condition_variable _cv;

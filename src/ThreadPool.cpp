@@ -19,18 +19,9 @@
 
 namespace Com {
 
-ThreadPool::ThreadPool(uint16_t threads)
+ThreadPool::ThreadPool(int threads)
 {
 	_max_threads = std::max(_max_threads, threads);
-	_thrds.reserve(_max_threads);
-	_runing = true;
-
-	for (uint16_t i = 0; i < _max_threads; i++) {
-		_thrds.emplace_back(bind_weak([this]()
-		{
-			worker();
-		}));
-	}
 }
 
 ThreadPool::~ThreadPool()
@@ -45,6 +36,13 @@ uint64_t ThreadPool::add_task(Task const &task)
 		std::lock_guard<std::mutex> locker(_mtx);
 		id = ++_new_task_id;
 		_tasks.push_back({id, task});
+	}
+
+	if (_thrds.size() == 0 || (_busy_thrd_count == _thrds.size() && _thrds.size() < _max_threads)) {
+		_thrds.emplace_back(bind_weak([this]()
+		{
+			worker();
+		}));
 	}
 
 	_cv.notify_one();
@@ -65,7 +63,13 @@ bool ThreadPool::cancel_task(uint64_t task_id)
 
 void ThreadPool::stop(bool wait)
 {
+	{
+		std::unique_lock<std::mutex> locker(_mtx);
+		_tasks.clear();
+	}
+
 	_runing = false;
+	_cv.notify_all();
 	if (wait) {
 		for (auto &t : _thrds) {
 			if (t.joinable()) {
@@ -83,15 +87,17 @@ void ThreadPool::worker()
 			std::unique_lock<std::mutex> locker(_mtx);
 			_cv.wait(locker, [this]()
 			{
-				return _tasks.size() > 0;
+				return !_runing || _tasks.size() > 0;
 			});
-			if (_tasks.size()) {
+			if (_runing && _tasks.size()) {
 				task = _tasks.front().second;
 				_tasks.pop_front();
 			}
 		}
 		if (task) {
+			_busy_thrd_count += 1;
 			task();
+			_busy_thrd_count -= 1;
 		}
 	}
 }
