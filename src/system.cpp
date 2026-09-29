@@ -15,7 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "system.hpp"
 #include "Proc/load.hpp"
+#include "string.hpp"
 #include <charconv>
+#include <string>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -67,6 +69,31 @@ void getuid(unsigned *real, unsigned *effective)
 	if (effective) {
 		*effective = ::geteuid();
 	}
+}
+
+std::map<unsigned, Group> get_groups()
+{
+	std::map<unsigned, Group> ret;
+	auto data = Proc::load_values_style("/etc/group", ":");
+	for (auto const &items : data) {
+		if (items.size() != 4) {
+			continue;
+		}
+		Group g;
+		g.name = items[0];
+		g.password = items[1];
+		std::from_chars(&items[2][0], &items[2][0] + items[2].size(), g.gid);
+		if (!items[3].empty()) {
+			for (auto u : Com::split(items[3], ",")) {
+				if (u.empty()) {
+					continue;
+				}
+				g.users.push_back(std::string(u));
+			}
+		}
+		ret.emplace(g.gid, std::move(g));
+	}
+	return ret;
 }
 
 }

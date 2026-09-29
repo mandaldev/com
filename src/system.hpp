@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Com {
 
@@ -31,12 +32,22 @@ struct Passwd {
 	std::filesystem::path shell;
 };
 
-/// <uid, passwd entry>
+/// <uid, passwd entry>, from /etc/passwd
 std::map<unsigned, Passwd> get_passwd();
 
 bool get_file_owner(std::filesystem::path const &path, bool follow_link, unsigned &uid, unsigned &gid);
 
 void getuid(unsigned *real, unsigned *effective);
+
+struct Group {
+	std::string name;
+	std::string password;
+	unsigned gid;
+	std::vector<std::string> users;
+};
+
+/// <gid, group>, from /etc/group
+std::map<unsigned, Group> get_groups();
 
 }
 #endif
