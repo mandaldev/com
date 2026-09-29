@@ -76,14 +76,14 @@ std::map<unsigned, Group> get_groups()
 	std::map<unsigned, Group> ret;
 	auto data = Proc::load_values_style("/etc/group", ":");
 	for (auto const &items : data) {
-		if (items.size() != 4) {
+		if (items.size() < 3) {
 			continue;
 		}
 		Group g;
 		g.name = items[0];
 		g.password = items[1];
 		std::from_chars(&items[2][0], &items[2][0] + items[2].size(), g.gid);
-		if (!items[3].empty()) {
+		if (items.size() > 3 && !items[3].empty()) {
 			for (auto u : Com::split(items[3], ",")) {
 				if (u.empty()) {
 					continue;
