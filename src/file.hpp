@@ -54,11 +54,18 @@ enum class FilePerm : unsigned {
 Flags<FilePerm> permissions_for_me(std::filesystem::path const &path);
 
 /// 检查 kid 是否位于目录 dir 下面（直接或间接）。
-/// 如果 top 不是空，则认为 kid 和 dir 都在 top 目录下面，则可以节省一些计算。
+/// 如果 top 不是空，则认为 kid 和 dir 都在 top 目录下面，可以节省一些计算。
 bool is_lexically_kid_of(
 	std::filesystem::path const &dir,
 	std::filesystem::path const &top,
 	std::filesystem::path const &kid
+);
+
+/// 删除 paths 里在其他目录下的路径：对于 paths 中任意两个元素 a, b，如果 a 在目录 b 下面，则移除 a。
+/// 如果 top 不为空，则认为 paths 都在 top 下面
+std::vector<std::filesystem::path> remove_kids(
+	std::vector<std::filesystem::path> const &paths,
+	std::filesystem::path const &top
 );
 
 /// 先转换为绝对路径，然后只对父目录部分进行 canonical，这样可以保留符号链接

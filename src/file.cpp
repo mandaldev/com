@@ -163,6 +163,23 @@ bool is_lexically_kid_of(
 	return false;
 }
 
+std::vector<std::filesystem::path> remove_kids(
+	std::vector<std::filesystem::path> const &paths,
+	std::filesystem::path const &top
+)
+{
+	size_t tmp = 0;
+	std::vector<std::filesystem::path> dst;
+	for (auto const &p : paths) {
+		if (tmp < dst.size() && Com::is_lexically_kid_of(dst[tmp], top, p)) {
+			continue;
+		}
+		tmp = dst.size();
+		dst.push_back(p);
+	}
+	return dst;
+}
+
 std::filesystem::path canonical_parent(std::filesystem::path path, std::error_code ec)
 {
 	ec = {};
