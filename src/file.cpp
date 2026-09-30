@@ -163,4 +163,21 @@ bool is_lexically_kid_of(
 	return false;
 }
 
+std::filesystem::path canonical_parent(std::filesystem::path path, std::error_code ec)
+{
+	ec = {};
+	if (path.is_relative()) {
+		path = std::filesystem::absolute(path, ec);
+		if (ec) {
+			return path;
+		}
+		path = path.lexically_normal();
+		if (!path.has_filename()) {
+			path = path.parent_path();
+		}
+	}
+	path = std::filesystem::canonical(path.parent_path(), ec) / path.filename();
+	return path;
+}
+
 }

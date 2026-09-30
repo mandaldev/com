@@ -61,5 +61,8 @@ bool is_lexically_kid_of(
 	std::filesystem::path const &kid
 );
 
+/// 先转换为绝对路径，然后只对父目录部分进行 canonical，这样可以保留符号链接
+std::filesystem::path canonical_parent(std::filesystem::path path, std::error_code ec);
+
 }
 #endif
