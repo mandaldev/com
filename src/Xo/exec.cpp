@@ -89,10 +89,7 @@ std::filesystem::path exec_install_prefix()
 	}
 	auto name = p.filename();
 	auto prefix = p.parent_path().parent_path();
-	if (prefix / "bin" / name == p) {
-		return prefix;
-	}
-	return {};
+	return prefix;
 }
 
 std::map<std::string, std::string> build_env_map()
