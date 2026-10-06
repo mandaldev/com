@@ -102,7 +102,10 @@ std::filesystem::path home_dir()
 
 bool is_filename_valid(std::string const &name)
 {
-	auto disable = name.empty() || name == "." || name == ".." || name.find("\\") < name.size();
+	auto disable = name.empty() || name == "." || name == ".."
+		|| name.find("/") < name.size()
+		|| name.find("\\") < name.size()
+		;
 	return !disable;
 }
 
