@@ -87,7 +87,6 @@ std::filesystem::path exec_install_prefix()
 	if (p.empty()) {
 		return p;
 	}
-	auto name = p.filename();
 	auto prefix = p.parent_path().parent_path();
 	return prefix;
 }
