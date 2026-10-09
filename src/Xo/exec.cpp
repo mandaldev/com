@@ -71,7 +71,8 @@ int exec(std::string const &cmd, std::string const &tmpname, std::string &stdout
 			ret = 1;
 		}
 	}
-	std::system(("rm -f " + err_name + " " + out_name).c_str());
+	[[maybe_unused]]
+	auto unused = std::system(("rm -f " + err_name + " " + out_name).c_str());
 	return ret;
 }
 
