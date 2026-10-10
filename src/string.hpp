@@ -26,11 +26,13 @@
 
 namespace Com {
 
+/// 方便的转码接口，失败返回空字符串
 static inline std::string ustr(std::u32string_view str)
 {
 	return utf8_encode(str).value_or("");
 }
 
+/// 使用 `utf8_decode_fallback_ascii`
 static inline std::u32string ustr(std::string_view str)
 {
 	return utf8_decode_fallback_ascii(str);
