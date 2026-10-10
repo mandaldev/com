@@ -27,5 +27,8 @@ std::optional<std::u32string> utf8_decode(std::string_view str);
 
 std::optional<std::string> utf8_encode(std::u32string_view str);
 
+/// 如果解码失败，则回退到 ascii 编码，对非 ascii 字符进行转义（ "@XX" 形式）
+std::u32string utf8_decode_fallback_ascii(std::string_view str);
+
 }
 #endif

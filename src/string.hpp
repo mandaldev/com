@@ -33,7 +33,7 @@ static inline std::string ustr(std::u32string_view str)
 
 static inline std::u32string ustr(std::string_view str)
 {
-	return utf8_decode(str).value_or(U"");
+	return utf8_decode_fallback_ascii(str);
 }
 
 static inline std::string &toupper(std::string &str)

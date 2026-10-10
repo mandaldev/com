@@ -15,8 +15,10 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "utf8.hpp"
 #include "../base.hpp"
+#include "base16.hpp"
 #include <array>
 #include <cassert>
+#include <string>
 
 namespace Com {
 
@@ -220,6 +222,23 @@ std::optional<std::string> utf8_encode(std::u32string_view str)
 		out.append(c.data(), c.data() + n);
 	}
 	return out;
+}
+
+std::u32string utf8_decode_fallback_ascii(std::string_view str)
+{
+	auto opt = utf8_decode(str);
+	if (opt) {
+		return opt.value();
+	}
+	std::u32string ret;
+	for (auto c : str) {
+		if (c > 127) {
+			ret += U"@" + utf8_decode(base16_encode(&c, 1)).value();
+		} else {
+			ret += c;
+		}
+	}
+	return ret;
 }
 
 }
