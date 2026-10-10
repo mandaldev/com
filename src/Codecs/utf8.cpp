@@ -18,6 +18,7 @@
 #include "base16.hpp"
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <string>
 
 namespace Com {
@@ -231,7 +232,7 @@ std::u32string utf8_decode_fallback_ascii(std::string_view str)
 		return opt.value();
 	}
 	std::u32string ret;
-	for (auto c : str) {
+	for (uint8_t c : str) {
 		if (c > 127) {
 			ret += U"@" + utf8_decode(base16_encode(&c, 1)).value();
 		} else {
