@@ -82,6 +82,7 @@
           headers [
             "src/Codecs/base16.hpp"
             "src/Codecs/utf8.hpp"
+            "src/Codecs/utf16.hpp"
           ]
         }
         {
